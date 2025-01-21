@@ -1,15 +1,10 @@
-.todo {
-  margin: 8px 16px;
-  padding: 12px 24px;
-  border: 1px solid black;
-  border-radius: 4px;
+*,
+*::after,
+*::before {
+  box-sizing: inheritance;
 }
 
-.todo--completed {
-  background-color: aquamarine;
-}
-
-.todo--pending {
-  background-color: darkred;
-  color: white;
+body {
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
 }

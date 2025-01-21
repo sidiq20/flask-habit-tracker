@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template("home.html", title="Habit Tracker - Home")
+    return render_template("layout.html", title="Habit Tracker - Home")
 
 @app.route("/add", methods=["GET", "POST"])
 def add_habit():
