@@ -54,4 +54,15 @@ body {
   border: 3px solid #000;
   border-radius: 6px;
   background-color: #fafafa;
+  margin-bottom: 1rem;
+}
+
+.form__button {
+  font-size: inherit;
+  background-color: #f9dba0;
+  cursor: pointer;
+  border-radius: 6px;
+  border: none;
+  padding: 0.5rem 2.5rem;
+  align-self: flex-end;
 }
