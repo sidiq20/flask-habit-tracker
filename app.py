@@ -1,5 +1,5 @@
-import datetime
-from flask import Flask, render_template, request
+from flask import Flask
+from routes import pages
 
 app = Flask(__name__)
 habits = ["Test habit", "Test habit 2"]
