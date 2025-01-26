@@ -2,33 +2,47 @@
 
 {% block main_content %}
   <section class="habit-list">
-    {% for habit in habits %}
-      {% set completed = habit["_id"] in completions %}
-      {% if completed %}
-        <div class="habit completed">
-          <p class="habit__name">{{ habit["name"] }}</p>
-          <div class="habit__elements">
-            <form method="POST" action="{{ url_for('habits.delete_habit', habit_id=habit['_id']) }}" class="habit__form">
-              <button type="submit" class="habit__button habit__button--delete">Delete</button>
+    {% if habits|length == 0 %}
+      <div class="habit-empty">
+        <p>No habits yet! <a href="{{ url_for('habits.add_habit') }}">Add one now</a></p>
+      </div>
+    {% else %}
+      {% for habit in habits %}
+        {% set completed = habit._id in completions %}
+        <div class="habit {{ 'completed' if completed }}">
+          {% if completed %}
+            <div class="habit__info">
+              <p class="habit__name">{{ habit.name }}</p>
+              {% if habit.streak > 0 %}
+                <span class="habit__streak">🔥 {{ habit.streak }} day streak!</span>
+              {% endif %}
+            </div>
+            <div class="habit__elements">
+              <form method="POST" action="{{ url_for('habits.uncomplete') }}" class="habit__form">
+                <input type="hidden" value="{{ habit._id }}" name="habitId" />
+                <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}" />
+                <button type="submit" class="habit__button habit__button--uncomplete">Undo</button>
+              </form>
+              <form method="POST" action="{{ url_for('habits.delete_habit', habit_id=habit._id) }}" class="habit__form">
+                <button type="submit" class="habit__button habit__button--delete">Delete</button>
+              </form>
+              <a href="{{ url_for('habits.edit_habit', habit_id=habit._id) }}" class="habit__link">Edit</a>
+            </div>
+          {% else %}
+            <form method="POST" class="habit__form" action="{{ url_for('habits.complete') }}">
+              <input type="hidden" value="{{ habit._id }}" name="habitId" />
+              <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}" />
+              <button type="submit" class="habit__button">{{ habit.name }}</button>
             </form>
-            <a href="{{ url_for('habits.edit_habit', habit_id=habit['_id']) }}" class="habit__link">Edit</a>
-          </div>
+            <div class="habit__elements">
+              <form method="POST" action="{{ url_for('habits.delete_habit', habit_id=habit._id) }}" class="habit__form">
+                <button type="submit" class="habit__button habit__button--delete">Delete</button>
+              </form>
+              <a href="{{ url_for('habits.edit_habit', habit_id=habit._id) }}" class="habit__link">Edit</a>
+            </div>
+          {% endif %}
         </div>
-      {% else %}
-        <div class="habit">
-          <form method="POST" class="habit__form" action="{{ url_for('habits.complete') }}">
-            <input type="hidden" value="{{ habit['_id'] }}" name="habitId" />
-            <input type="hidden" name="date" value="{{ selected_date }}" />
-            <button type="submit" class="habit__button">{{ habit["name"] }}</button>
-          </form>
-          <div class="habit__elements">
-            <form method="POST" action="{{ url_for('habits.delete_habit', habit_id=habit['_id']) }}" class="habit__form">
-              <button type="submit" class="habit__button habit__button--delete">Delete</button>
-            </form>
-            <a href="{{ url_for('habits.edit_habit', habit_id=habit['_id']) }}" class="habit__link">Edit</a>
-          </div>
-        </div>
-      {% endif %}
-    {% endfor %}
+      {% endfor %}
+    {% endif %}
   </section>
 {% endblock %}
