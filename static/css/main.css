@@ -71,34 +71,49 @@ body {
 
 .header {
   display: flex;
-  background: linear-gradient(45deg, #ffde59, #ffa500);
+  background: linear-gradient(135deg, #ffde59 0%, #ffa500 100%);
   color: #333;
   justify-content: space-between;
   align-items: center;
-  border: 5px solid black;
-  border-radius: 15px 15px 0px 0px;
-  padding: 1rem;
-  margin-top: 1rem;
-  box-shadow: 6px 6px 0px black;
+  border: 4px solid black;
+  border-radius: 20px;
+  padding: 1.2rem 2rem;
+  margin: 1rem auto;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.8);
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.header:active {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.8);
 }
 
 .header__link {
   text-decoration: none;
   color: #333;
   font-weight: bold;
-  transition: transform 0.3s ease, color 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: 3px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .header__link:hover {
-  color: #ff6347;
-  transform: scale(1.1);
+  color: #000;
+  border-color: #000;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 .header__logo {
   margin: 0;
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: bold;
-  text-shadow: 3px 3px #fff;
+  text-shadow: 2px 2px 0 #fff, 4px 4px 0 #000;
+  letter-spacing: 1px;
 }
 
 .form {
@@ -147,43 +162,52 @@ body {
 
 .dates {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   color: #333;
   font-size: 1.1rem;
-  margin-bottom: 2.5rem;
+  margin: 1.5rem 0;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .dates__link {
   color: inherit;
   text-decoration: none;
   outline: none;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  border: 2px solid black;
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+  border: 3px solid black;
   background-color: #fff2d8;
   font-weight: bold;
-  transition: transform 0.3s ease, background-color 0.3s ease;
-  box-shadow: 3px 3px 0px black;
-  min-width: 3.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.8);
+  min-width: 4rem;
   text-align: center;
+  position: relative;
 }
 
 .dates__link--current {
-  background: #ffde59;
-  border-color: #333;
+  background: linear-gradient(135deg, #ffde59 0%, #ffa500 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.8);
 }
 
 .dates__link:not(.dates__link--current):hover {
   background: #ffa500;
-  transform: scale(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.8);
+}
+
+.dates__link:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
 }
 
 .date {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 0.25rem;
 }
 
 .habit-list {
@@ -341,16 +365,36 @@ body {
 /* Responsive Design */
 @media screen and (max-width: 768px) {
   .header {
-    margin: 0.5rem 1rem;
-    padding: 0.75rem;
+    margin: 0.75rem 1rem;
+    padding: 0.75rem 1.25rem;
+    border-width: 3px;
+    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.8);
   }
 
   .header__logo {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
+    text-shadow: 1px 1px 0 #fff, 3px 3px 0 #000;
+  }
+
+  .header__link {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
   }
 
   .main {
-    padding: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .dates {
+    margin: 1rem 0;
+    gap: 0.5rem;
+  }
+
+  .dates__link {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    min-width: 3.5rem;
+    border-width: 2px;
   }
 
   .habit {
@@ -366,26 +410,47 @@ body {
   .habit.completed {
     grid-template-columns: 1fr;
   }
-
-  .dates {
-    margin-bottom: 1.5rem;
-  }
-
-  .dates__link {
-    font-size: 0.9rem;
-    padding: 0.2rem 0.5rem;
-  }
 }
 
 @media screen and (max-width: 480px) {
   .header {
-    flex-direction: column;
-    gap: 0.5rem;
-    text-align: center;
+    margin: 0.5rem;
+    padding: 0.6rem 1rem;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .header__logo {
+    font-size: 1.5rem;
+  }
+
+  .header__link {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .dates {
+    justify-content: center;
+    margin: 0.75rem 0;
+  }
+
+  .dates__link {
+    display: none;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+    min-width: 3rem;
+  }
+
+  /* Show only 3 dates on mobile */
+  .dates__link:nth-child(3),
+  .dates__link:nth-child(4),
+  .dates__link:nth-child(5) {
+    display: block;
   }
 
   .habit {
     grid-template-columns: 1fr;
+    padding: 0.6rem;
   }
 
   .habit__elements {
@@ -399,11 +464,21 @@ body {
   }
 
   .habit__name {
-    font-size: 1.1rem;
+    font-size: 1rem;
+  }
+
+  .habit__button--delete,
+  .habit__button--uncomplete,
+  .habit__link {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    min-width: 70px;
   }
 
   .form__button {
     width: 100%;
     align-self: center;
+    font-size: 1rem;
+    padding: 0.4rem 1rem;
   }
 }
