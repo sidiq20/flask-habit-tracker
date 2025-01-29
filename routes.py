@@ -57,8 +57,8 @@ def index():
             completions=completions,
             title="Habit Tracker - Home",
         )
-    except ValueError:
-        flash("Invalid date format", "error")
+    except ValueError as e:
+        flash(f"Invalid date format: {str(e)}", "error")
         return redirect(url_for(".index"))
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "error")
