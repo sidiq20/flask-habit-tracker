@@ -1,6 +1,11 @@
 from flask import (request, redirect, url_for, render_template,
                    current_app, flash, session, Blueprint)
 from datetime import datetime
+from .routes import pages
+from .auth import auth
+from flask import Blueprint
+
+pages = Blueprint("pages", __name__)
 
 auth = Blueprint("auth", __name__)
 
@@ -30,7 +35,7 @@ def register():
 
     return render_template("auth/register.html", title="Register")
 
-@auth.route("/login", methods=["GET", "POST"])
+@auth.route("/login", method=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form.get("email", "").strip()
