@@ -45,10 +45,10 @@ def index():
         )
     except ValueError as e:
         flash(f"Invalid date format: {str(e)}", "error")
-        return redirect(url_for(".habits.index"))
+        return redirect(url_for("habits.index"))
     except Exception as e:
         flash(f"An unexpected error occurred: {str(e)}", "error")
-        return redirect(url_for(".habits.index"))
+        return redirect(url_for("habits.index"))
 
 @pages.route("/complete", methods=["POST"])
 def complete():
@@ -56,23 +56,23 @@ def complete():
         date_string = request.form.get("date")
         if not date_string:
             flash("Date is required", "error")
-            return redirect(url_for(".habits.index"))
+            return redirect(url_for("habits.index"))
 
         date = datetime.fromisoformat(date_string)
         habit_id = request.form.get("habitId")
         if not habit_id:
             flash("Habit ID is required", "error")
-            return redirect(url_for(".habits.index"))
+            return redirect(url_for("habits.index"))
 
         if current_app.db.complete_habit(habit_id, date):
             flash("Habit marked as complete!", "success")
         else:
             flash("Failed to complete habit", "error")
 
-        return redirect(url_for(".habits.index", date=date_string))
+        return redirect(url_for("habits.index", date=date_string))
     except ValueError as e:
         flash(f"Invalid date format: {str(e)}", "error")
-        return redirect(url_for(".habits.index"))
+        return redirect(url_for("habits.index"))
     except Exception as e:
         flash(f"An unexpected error occurred: {str(e)}", "error")
-        return redirect(url_for(".habits.index"))
+        return redirect(url_for("habits.index"))
