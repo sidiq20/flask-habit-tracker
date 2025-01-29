@@ -12,6 +12,8 @@ class EmailService:
         self.from_email = os.environ.get('SMTP_FROM')
 
     def send_reminder(self, to_email: str, habit_name: str) -> bool:
+        if not all([self.smtp_host, self.smtp_port, self.smtp_user, self.smtp_pass, self.from_email]):
+            raise ValueError("SMTP environment variables are not properly set")
         try:
             msg = MIMEMultipart()
             msg['From'] = self.from_email
