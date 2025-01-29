@@ -2,8 +2,10 @@ from flask import (request, redirect, url_for, render_template,
                    current_app, flash, session, Blueprint)
 from datetime import datetime
 from .routes import pages
+from routes.auth import auth
 from .auth import auth
 from flask import Blueprint
+
 
 pages = Blueprint("pages", __name__)
 
@@ -29,7 +31,7 @@ def register():
         if user:
             session["user_id"] = str(user["_id"])
             flash("registration successful", "success")
-            return redirect(url_for("habits.index"))
+            return redirect(url_for(".index"))
         else:
             flash("Registration failed", "error")
 
@@ -49,7 +51,7 @@ def login():
         if user and current_app.db.verify_password(user, password):
             session["user_id"] = str(user["_id"])
             flash("Login successful!", "success")
-            return redirect(url_for("habits.index"))
+            return redirect(url_for(".index"))
         else:
             flash("Invalid email or password", "error")
 
