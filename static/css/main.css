@@ -362,7 +362,7 @@ body {
   text-decoration: underline;
 }
 
-/* Responsive Design */
+
 @media screen and (max-width: 768px) {
   .header {
     margin: 0.75rem 1rem;
@@ -441,7 +441,6 @@ body {
     min-width: 3rem;
   }
 
-  /* Show only 3 dates on mobile */
   .dates__link:nth-child(3),
   .dates__link:nth-child(4),
   .dates__link:nth-child(5) {
@@ -480,5 +479,86 @@ body {
     align-self: center;
     font-size: 1rem;
     padding: 0.4rem 1rem;
+  }
+}
+
+.auth-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff6d8;
+  border: 3px solid black;
+  border-radius: 12px;
+  box-shadow: 4px 4px 0px black;
+}
+
+.auth-title {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+  text-shadow: 2px 2px 0 #fff;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: bold;
+  color: #333;
+}
+
+.form-input {
+  padding: 0.75rem;
+  border: 2px solid black;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  background-color: white;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #ff6347;
+  box-shadow: 3px 3px 0px #333;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.auth-link a {
+  color: #ff6347;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}
+
+@media screen and (max-width: 480px) {
+  .auth-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .auth-title {
+    font-size: 1.75rem;
+  }
+
+  .form-input {
+    padding: 0.6rem;
   }
 }
