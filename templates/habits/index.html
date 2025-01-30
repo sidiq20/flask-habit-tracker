@@ -4,7 +4,7 @@
   <section class="habit-list">
     {% if habits|length == 0 %}
       <div class="habit-empty">
-        <p>No habits yet! <a href="{{ url_for('habits.add_habit') }}">Add one now</a></p>
+        <p>No habits yet! <a href="{{ url_for('habits_blueprint.add_habit') }}">Add one now</a></p>
       </div>
     {% else %}
       {% for habit in habits %}
@@ -23,22 +23,22 @@
                 <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}" />
                 <button type="submit" class="habit__button habit__button--uncomplete">Undo</button>
               </form>
-              <form method="POST" action="{{ url_for('habits.delete_habit', habit_id=habit._id) }}" class="habit__form">
+              <form method="POST" action="{{ url_for('habits_blueprint.delete_habit', habit_id=habit._id) }}" class="habit__form">
                 <button type="submit" class="habit__button habit__button--delete">Delete</button>
               </form>
-              <a href="{{ url_for('habits.edit_habit', habit_id=habit._id) }}" class="habit__link">Edit</a>
+              <a href="{{ url_for('habits_blueprint.edit_habit', habit_id=habit._id) }}" class="habit__link">Edit</a>
             </div>
           {% else %}
-            <form method="POST" class="habit__form" action="{{ url_for('habits.complete') }}">
+            <form method="POST" class="habit__form" action="{{ url_for('habits_blueprint.complete') }}">
               <input type="hidden" value="{{ habit._id }}" name="habitId" />
               <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}" />
               <button type="submit" class="habit__button">{{ habit.name }}</button>
             </form>
             <div class="habit__elements">
-              <form method="POST" action="{{ url_for('habits.delete_habit', habit_id=habit._id) }}" class="habit__form">
+              <form method="POST" action="{{ url_for('habits_blueprint.delete_habit', habit_id=habit._id) }}" class="habit__form">
                 <button type="submit" class="habit__button habit__button--delete">Delete</button>
               </form>
-              <a href="{{ url_for('habits.edit_habit', habit_id=habit._id) }}" class="habit__link">Edit</a>
+              <a href="{{ url_for('habits_blueprint.edit_habit', habit_id=habit._id) }}" class="habit__link">Edit</a>
             </div>
           {% endif %}
         </div>
