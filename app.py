@@ -1,8 +1,8 @@
 import datetime
 import wraps
 from flask import Flask, session, redirect, url_for, flash, request
-from routes import pages
-from routes.auth import auth
+from routes.pages import pages
+from routes.habits import habits_blueprint
 from models.database import Database
 from services.reminder_service import ReminderService
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -37,10 +37,10 @@ def create_app():
                     completion_date = datetime.fromisoformat(date_str)
                     if completion_date.date() > datetime.now().date():
                         flash("You can't complete habits for future dates", 'error')
-                        return redirect(url_for('.habits.index'))
+                        return redirect(url_for('habits_blueprint.index'))
                 except ValueError:
                     flash('Invalid date format', 'error')
-                    return redirect(url_for('.habits.index'))
+                    return redirect(url_for('habits_blueprint.index'))
             return f(*args, **kwargs)
         return decorated_function
 
@@ -49,9 +49,10 @@ def create_app():
     app.prevent_future_completion = prevent_future_completion
 
     # Register blueprints
-    app.register_blueprint(pages, url_prefix="/habits")
+    app.register_blueprint(pages)
+    from routes.auth import auth
     app.register_blueprint(auth, url_prefix="/auth")
-
+    app.register_blueprint(habits_blueprint, url_prefix="/habits")
 
     # Set up reminder scheduler
     scheduler = BackgroundScheduler()
