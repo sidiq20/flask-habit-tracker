@@ -29,9 +29,10 @@ def add_habit():
         flash("You must be logged in to add a habit", "error")
         return redirect(url_for("auth.login"))
 
-    current_app.db.add_habit(user_id, habit_name)
-    flash("Habit added successfully!", "success")
-    return redirect(url_for("habits_blueprint.index"))
+        current_app.db.create_habit(user_id, habit_name)
+        flash("Habit added successfully!", "success")
+        return redirect(url_for("habits_blueprint.index"))
+    return render_template("habits/add_habit.html", title="Add habit")
 
 
 @habits_blueprint.route("/complete", methods=["POST"])
