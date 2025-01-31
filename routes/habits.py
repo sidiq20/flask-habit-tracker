@@ -16,7 +16,20 @@ def index():
 
     return render_template('habits/index.html', title="Your Habits", selected_date=selected_date, date_range=date_range_values)
 
-@habits_blueprint.route("/add", methods=["POST"])
+    if not user_id:
+        flash("You must be logged in to view your habits.", "error")
+        return redirect(url_for("auth.login"))
+
+    habits = current_app.db.get_user_habits(user_id)
+
+    return render_template('habits/index.html',
+                           title="Your Habits",
+                           selected_date=selected_date,
+                           date_range=date_range_values,
+                           habits=habits)
+
+
+@habits_blueprint.route("/add", methods=["GET", "POST"])
 def add_habit():
     habit_name = request.form.get("habit_name", "").strip()
 
