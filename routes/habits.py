@@ -49,4 +49,20 @@ def complete_habit():
 
     current_app.db.complete_habit(user_id, habit_id)
     flash("Habit marked as completed!", "success")
+    return redirect(url_for("habits_blueprint.index", date=date))
+
+@habits_blueprint.route("/delete/<habit_id>", methods=["POST"])
+def delete_habit(habit_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("You must be logged in to delete a habit", "error")
+        return redirect(url_for("auth.login"))
+
+    habit = current_app.db.get_habit_by_id(habit_id, user_id)
+    if not habit:
+        flash("Habit not found", "error")
+        return redirect(url_for("habits_blueprint.index"))
+
+    current_app.db.delete_habit(habit_id)
+    flash("Habit deleted successfully!", "success")
     return redirect(url_for("habits_blueprint.index"))
