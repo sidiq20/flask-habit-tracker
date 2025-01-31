@@ -12,9 +12,9 @@ class Database:
         self.db = self.client[os.environ.get('DB_NAME', 'habit_tracker')]
 
         # Create indexes
-        self.db.users.create_index('email', unique=True)
-        self.db.habits.create_index([('userId', 1), ('name', 1)])
-        self.db.completions.create_index([('habitId', 1), ('date', 1)], unique=True)
+        # self.db.users.create_index('email', unique=True)
+        # self.db.habits.create_index([('userId', 1), ('name', 1)])
+        # self.db.completions.create_index([('habitId', 1), ('date', 1)], unique=True)
 
     def create_user(self, email: str, password: str, timezone: str = 'UTC') -> Optional[dict]:
         try:
@@ -39,6 +39,7 @@ class Database:
 
     def create_habit(self, user_id: str, name: str, reminder_time: str = '19:00') -> Optional[dict]:
         try:
+            print(f"Saving habit for user: {user_id}, Habit: {name}")
             habit = {
                 'userId': ObjectId(user_id),
                 'name': name.strip(),
@@ -47,6 +48,7 @@ class Database:
                 'lastReminderSent': None
             }
             result = self.db.habits.insert_one(habit)
+            print(f"Habit saved with ID: {result.inserted_id}")
             habit['_id'] = result.inserted_id
             return habit
         except Exception as e:
@@ -54,7 +56,10 @@ class Database:
             return None
 
     def get_user_habits(self, user_id: str) -> list:
-        return list(self.db.habits.find({'userId': ObjectId(user_id)}))
+        print(f"Fetching habits for user: {user_id}")  # Debugging
+        habits = list(self.db.habits.find({'userId': ObjectId(user_id)}))
+        print(f"Found habits: {habits}")  # Debugging
+        return habits
 
     def complete_habit(self, habit_id: str, date: datetime) -> bool:
         try:

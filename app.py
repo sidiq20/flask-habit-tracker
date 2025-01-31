@@ -10,6 +10,10 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
+print("MONGO_URI:", os.environ.get("MONGO_URI"))
+print("DB_NAME:", os.environ.get("DB_NAME"))
+print("SECRET_KEY:", os.environ.get("SECRET_KEY"))
+
 
 def create_app():
     app = Flask(__name__)

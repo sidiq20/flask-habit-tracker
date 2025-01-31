@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 
 {% block main_content %}
-    <form class="form" method="POST">
-      <textarea class="form__input" id="habit" name="habit" rows="3" placeholder="Add a new daily habit"></textarea>
+    <form class="form" method="POST" action="{{ url_for('habits_blueprint.add_habit') }}">
+      <textarea class="form__input" id="habit" name="habit_name" rows="3" placeholder="Add a new daily habit"></textarea>
         <button class="form__button" type="submit">Add</button>
     </form>
 {% endblock %}
