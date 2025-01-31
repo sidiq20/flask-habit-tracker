@@ -80,3 +80,11 @@ def delete_habit(habit_id):
     current_app.db.delete_habit(habit_id)
     flash("Habit deleted successfully!", "success")
     return redirect(url_for("habits_blueprint.index"))
+
+
+@habits_blueprint.route("/edit/<habit_id>", methods=["GET", "POST"])
+def edit_habit(habit_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("You must be logged in to edit an habit", "error")
+        return redirect(url_for("auth.login"))
