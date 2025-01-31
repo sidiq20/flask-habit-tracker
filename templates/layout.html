@@ -35,10 +35,11 @@
     <main class="main">
       <section class="dates">
         {% for date in date_range %}
-          <a
-            class="dates__link {{ 'dates__link--current' if loop.index0 == 3 else '' }} {{ 'dates__link--selected' if date.strftime('%Y-%m-%d') == selected_date.strftime('%Y-%m-%d') else '' }}"
-            href="{{ url_for('habits_blueprint.index', date=date.strftime('%Y-%m-%d')) }}"
-          >
+            <a
+             class="dates__link {{ 'dates__link--selected' if date.strftime('%Y-%m-%d') == selected_date.strftime('%Y-%m-%d') else '' }}"
+             href="{{ url_for('habits_blueprint.index', date=date.strftime('%Y-%m-%d')) }}"
+            >
+
             <time class="date" datetime="{{ date.strftime('%Y-%m-%d') }}">
               <span>{{ date.strftime("%a") }}</span>
               <span>{{ date.strftime("%d") }}</span>

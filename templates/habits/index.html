@@ -19,7 +19,7 @@
             </div>
             <div class="habit__elements">
               <form method="POST" action="{{ url_for('habits.uncomplete') }}" class="habit__form">
-                <input type="hidden" value="{{ habit._id }}" name="habitId" />
+                <input type="hidden" value="{{ habit._id }}" name="habit_id" />
                 <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}" />
                 <button type="submit" class="habit__button habit__button--uncomplete">Undo</button>
               </form>
@@ -29,8 +29,8 @@
               <a href="{{ url_for('habits_blueprint.edit_habit', habit_id=habit._id) }}" class="habit__link">Edit</a>
             </div>
           {% else %}
-            <form method="POST" class="habit__form" action="{{ url_for('habits_blueprint.complete') }}">
-              <input type="hidden" value="{{ habit._id }}" name="habitId" />
+            <form method="POST" class="habit__form" action="{{ url_for('habits_blueprint.complete_habit') }}">
+              <input type="hidden" value="{{ habit._id }}" name="habit_id" />
               <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}" />
               <button type="submit" class="habit__button">{{ habit.name }}</button>
             </form>

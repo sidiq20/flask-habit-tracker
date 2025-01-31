@@ -20,13 +20,17 @@ def add_calc_date_range():
 @pages.route("/")
 def index():
     try:
+        user_id = session.get('user_id', '')
+        print(f"User ID in session: {user_id}")
         date_str = request.args.get("date")
         if date_str:
             selected_date = datetime.fromisoformat(date_str)
         else:
             selected_date = today_at_midnight()
 
-        habits = current_app.db.get_user_habits(session.get('user_id', ''))
+        habits = current_app.db.get_user_habits(user_id)
+        print(f"Habits fetched: {habits}")
+        print(f"Fetched habits for user {user_id}: {habits}")
 
         completions = [
             str(habit['_id']) for habit in habits
@@ -45,7 +49,7 @@ def index():
     except Exception as e:
         flash(f"An unexpected error occurred: {str(e)}", "error")
 
-    return redirect(url_for("habits.index"))  # ✅ Use "habits.index" instead of ".index"
+    return redirect(url_for("habits_blueprint.index"))
 
 @pages.route("/complete", methods=["POST"])
 def complete():
@@ -53,7 +57,7 @@ def complete():
         date_string = request.form.get("date")
         if not date_string:
             flash("Date is required", "error")
-            return redirect(url_for("habits_blueprint.index"))  # ✅ Use "habits.index"
+            return redirect(url_for("habits_blueprint.index"))
 
         date = datetime.fromisoformat(date_string)
         habit_id = request.form.get("habitId")
@@ -72,4 +76,4 @@ def complete():
     except Exception as e:
         flash(f"An unexpected error occurred: {str(e)}", "error")
 
-    return redirect(url_for("habits.index"))
+    return redirect(url_for("habits_blueprint.index"))

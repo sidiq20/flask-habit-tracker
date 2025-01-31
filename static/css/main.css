@@ -190,6 +190,12 @@ body {
   background: linear-gradient(135deg, #ffde59 0%, #ffa500 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.8);
+  font-weight: bold;
+  scroll-margin: auto;
+}
+
+.dates__link--selected {
+ background: #ffa500;
 }
 
 .dates__link:not(.dates__link--current):hover {
@@ -208,6 +214,8 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
 }
 
 .habit-list {
@@ -377,7 +385,7 @@ body {
   }
 
   .header__link {
-    font-size: 0.9rem;
+    font-size: 2rem;
     padding: 0.4rem 0.8rem;
   }
 
@@ -425,7 +433,7 @@ body {
   }
 
   .header__link {
-    font-size: 0.85rem;
+    font-size: 2rem;
     padding: 0.3rem 0.6rem;
   }
 
