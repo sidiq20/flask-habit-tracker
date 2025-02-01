@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 from pymongo import MongoClient
 from bson import ObjectId
@@ -10,11 +10,6 @@ class Database:
     def __init__(self):
         self.client = MongoClient(os.environ.get('MONGO_URI'))
         self.db = self.client[os.environ.get('DB_NAME', 'habit_tracker')]
-
-        # Create indexes
-        # self.db.users.create_index('email', unique=True)
-        # self.db.habits.create_index([('userId', 1), ('name', 1)])
-        # self.db.completions.create_index([('habitId', 1), ('date', 1)], unique=True)
 
     def create_user(self, email: str, password: str, timezone: str = 'UTC') -> Optional[dict]:
         try:
@@ -37,18 +32,15 @@ class Database:
     def verify_password(self, user: dict, password: str) -> bool:
         return check_password_hash(user['password'], password)
 
-    def create_habit(self, user_id: str, name: str, reminder_time: str = '19:00') -> Optional[dict]:
+    def create_habit(self, user_id: str, name: str) -> Optional[dict]:
         try:
-            print(f"Saving habit for user: {user_id}, Habit: {name}")
             habit = {
                 'userId': ObjectId(user_id),
                 'name': name.strip(),
-                'reminderTime': reminder_time,
                 'createdAt': datetime.utcnow(),
-                'lastReminderSent': None
+                'streak': 0
             }
             result = self.db.habits.insert_one(habit)
-            print(f"Habit saved with ID: {result.inserted_id}")
             habit['_id'] = result.inserted_id
             return habit
         except Exception as e:
@@ -56,49 +48,120 @@ class Database:
             return None
 
     def get_user_habits(self, user_id: str) -> list:
-        print(f"Fetching habits for user: {user_id}")  # Debugging
-        habits = list(self.db.habits.find({'userId': ObjectId(user_id)}))
-        print(f"Found habits: {habits}")  # Debugging
-        return habits
+        return list(self.db.habits.find({'userId': ObjectId(user_id)}))
 
-    def complete_habit(self, habit_id: str, date: datetime) -> bool:
+    def delete_habit(self, habit_id: str, user_id: str) -> bool:
         try:
-            self.db.completions.insert_one({
-                'habitId': ObjectId(habit_id),
-                'date': date,
-                'createdAt': datetime.utcnow()
+            result = self.db.habits.delete_one({
+                '_id': ObjectId(habit_id),
+                'userId': ObjectId(user_id)
             })
+            return result.deleted_count > 0
+        except Exception as e:
+            print(f"Error deleting habit: {e}")
+            return False
+
+    def get_habit_by_id(self, habit_id: str, user_id: str) -> Optional[dict]:
+        try:
+            return self.db.habits.find_one({
+                '_id': ObjectId(habit_id),
+                'userId': ObjectId(user_id)
+            })
+        except Exception as e:
+            print(f"Error fetching habit: {e}")
+            return None
+
+    def update_habit_name(self, habit_id: str, new_name: str) -> bool:
+        try:
+            result = self.db.habits.update_one(
+                {'_id': ObjectId(habit_id)},
+                {'$set': {'name': new_name}}
+            )
+            return result.modified_count > 0
+        except Exception as e:
+            print(f"Error updating habit name: {e}")
+            return False
+
+    def complete_habit(self, user_id: str, habit_id: str, date: datetime) -> bool:
+        try:
+            date_str = date.strftime("%Y-%m-%d")
+            # Insert or update the completion document (and store the date)
+            result = self.db.completions.update_one(
+                {
+                    'habitId': ObjectId(habit_id),
+                    'date': date_str
+                },
+                {'$setOnInsert': {
+                    'userId': ObjectId(user_id),
+                    'date': date_str,  # <-- Include the date here!
+                    'createdAt': datetime.utcnow()
+                }},
+                upsert=True
+            )
+
+            # Calculate new streak based on all completions for this habit
+            completions = list(self.db.completions.find(
+                {'habitId': ObjectId(habit_id)}
+            ).sort('date', -1))
+
+            streak = 0
+            current_date = datetime.utcnow().date()
+            for comp in completions:
+                # Now comp['date'] should be available
+                comp_date = datetime.strptime(comp['date'], "%Y-%m-%d").date()
+                if comp_date == current_date - timedelta(days=streak):
+                    streak += 1
+                else:
+                    break
+
+            # Update the habit's streak field
+            self.db.habits.update_one(
+                {'_id': ObjectId(habit_id)},
+                {'$set': {'streak': streak}}
+            )
+
             return True
         except Exception as e:
             print(f"Error completing habit: {e}")
             return False
 
-    def get_completion(self, habit_id: str, date: datetime) -> Optional[dict]:
-        return self.db.completions.find_one({
-            'habitId': ObjectId(habit_id),
-            'date': date
-        })
+    def uncomplete_habit(self, user_id: str, habit_id: str, date: str) -> bool:
+        try:
+            result = self.db.completions.delete_one({
+                'habitId': ObjectId(habit_id),
+                'date': date,
+                'userId': ObjectId(user_id)
+            })
 
-    def get_habits_needing_reminder(self, current_time: str) -> list:
-        pipeline = [
-            {
-                '$match': {
-                    'reminderTime': current_time,
-                    '$or': [
-                        {'lastReminderSent': None},
-                        {'lastReminderSent': {
-                            '$lt': datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)}}
-                    ]
-                }
-            },
-            {
-                '$lookup': {
-                    'from': 'users',
-                    'localField': 'userId',
-                    'foreignField': '_id',
-                    'as': 'user'
-                }
-            },
-            {'$unwind': '$user'}
-        ]
-        return list(self.db.habits.aggregate(pipeline))
+            # Recalculate streak after uncompleting
+            if result.deleted_count > 0:
+                completions = list(self.db.completions.find(
+                    {'habitId': ObjectId(habit_id)}
+                ).sort('date', -1))
+
+                streak = 0
+                current_date = datetime.utcnow().date()
+                for comp in completions:
+                    comp_date = datetime.strptime(comp['date'], "%Y-%m-%d").date()
+                    if comp_date == current_date - timedelta(days=streak):
+                        streak += 1
+                    else:
+                        break
+
+                self.db.habits.update_one(
+                    {'_id': ObjectId(habit_id)},
+                    {'$set': {'streak': streak}}
+                )
+
+            return result.deleted_count > 0
+        except Exception as e:
+            print(f"Error uncompleting habit: {e}")
+            return False
+
+    def get_habit_completions(self, user_id: str) -> list:
+        return list(self.db.completions.find({
+            'userId': ObjectId(user_id)
+        }))
+
+    def get_habits_needing_reminder(self, current_hour):
+        return self.collection.find({"reminderTime": current_hour})
