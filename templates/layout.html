@@ -2,53 +2,41 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=inter&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap">
-
-    {% block head_content %} {% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block head_content %}{% endblock %}
   </head>
-
   <body>
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <div class="flash-messages">
           {% for category, message in messages %}
-            <div class="flash-message flash-{{ category }}">
-              {{ message }}
-            </div>
+            <div class="flash-message flash-{{ category }}">{{ message }}</div>
           {% endfor %}
         </div>
       {% endif %}
     {% endwith %}
-
     <header class="header">
-      <h1 class="header__logo"><a href="{{ url_for('habits_blueprint.index') }}" class="header__link">streaker</a></h1>
+      <h1 class="header__logo">
+        <a href="{{ url_for('habits.index') }}" class="header__link">streaker</a>
+      </h1>
       {% if "add" not in request.endpoint %}
-        <a href="{{ url_for('habits_blueprint.add_habit') }}" class="header__link">+ Add new</a>
+        <a href="{{ url_for('habits.add_habit') }}" class="header__link">+ Add new</a>
       {% endif %}
     </header>
-
     <main class="main">
       <section class="dates">
-        {% for date in date_range %}
-            <a
-             class="dates__link {{ 'dates__link--selected' if date.strftime('%Y-%m-%d') == selected_date.strftime('%Y-%m-%d') else '' }}"
-             href="{{ url_for('habits_blueprint.index', date=date.strftime('%Y-%m-%d')) }}"
-            >
-
+        {% for date in date_range(selected_date) %}
+          <a class="dates__link {{ 'dates__link--selected' if date.strftime('%Y-%m-%d') == selected_date.strftime('%Y-%m-%d') else '' }}"
+             href="{{ url_for('habits.index', date=date.strftime('%Y-%m-%d')) }}">
             <time class="date" datetime="{{ date.strftime('%Y-%m-%d') }}">
-              <span>{{ date.strftime("%a") }}</span>
-              <span>{{ date.strftime("%d") }}</span>
+              <span>{{ date.strftime('%a %d') }}</span>
             </time>
           </a>
         {% endfor %}
       </section>
-      {% block main_content %}
-      {% endblock %}
+      {% block main_content %}{% endblock %}
     </main>
   </body>
 </html>
