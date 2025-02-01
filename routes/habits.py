@@ -1,90 +1,133 @@
 from flask import Blueprint, request, redirect, url_for, render_template, flash, session, current_app
 from datetime import datetime, timedelta
+from bson import ObjectId
 
-# Change the blueprint name from 'habits' to 'habits_blueprint'
-habits_blueprint = Blueprint("habits_blueprint", __name__)
+# Define the blueprint with the name "habits"
+habits = Blueprint("habits", __name__)
 
+
+# Return a list of datetime objects for the past `days` days (most recent last)
 def date_range(selected_date, days=7):
-    """Returns a list of dates for the past 'days' days including 'selected_date'."""
-    return [(selected_date - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(days)][::-1]
+    return [(selected_date - timedelta(days=i)) for i in range(days)][::-1]
 
 
-@habits_blueprint.route("/", methods=["GET"])
+# Inject helpers into the template context so we can use timedelta and date_range
+@habits.context_processor
+def inject_helpers():
+    return dict(timedelta=timedelta, date_range=date_range)
+
+
+@habits.route("/")
 def index():
-    selected_date = datetime.strptime('2025-01-30', '%Y-%m-%d')
-    date_range_values = [selected_date + timedelta(days=i) for i in range(7)]  # 7-day range for example
-
-    return render_template('habits/index.html', title="Your Habits", selected_date=selected_date, date_range=date_range_values)
-
+    user_id = session.get("user_id")
     if not user_id:
-        flash("You must be logged in to view your habits.", "error")
+        flash("Please log in to view habits", "error")
         return redirect(url_for("auth.login"))
+    try:
+        date_str = request.args.get("date", datetime.utcnow().strftime("%Y-%m-%d"))
+        selected_date = datetime.strptime(date_str, "%Y-%m-%d")
+    except ValueError:
+        flash("Invalid date format", "error")
+        return redirect(url_for("habits.index"))
 
-    habits = current_app.db.get_user_habits(user_id)
+    habits_list = current_app.db.get_user_habits(user_id)
+    completions = current_app.db.get_habit_completions(user_id)
+    # Build a set of (habit_id, date) pairs as strings
+    completion_dates = {
+        (str(comp['habitId']), comp['date'])
+        for comp in completions
+    }
 
-    return render_template('habits/index.html',
-                           title="Your Habits",
-                           selected_date=selected_date,
-                           date_range=date_range_values,
-                           habits=habits)
+    return render_template(
+        'habits/index.html',
+        habits=habits_list,
+        selected_date=selected_date,
+        completion_dates=completion_dates,
+        today=datetime.utcnow().strftime("%Y-%m-%d")
+    )
 
 
-@habits_blueprint.route("/add", methods=["GET", "POST"])
+@habits.route("/add", methods=["GET", "POST"])
 def add_habit():
-    habit_name = request.form.get("habit_name", "").strip()
-
-    if not habit_name:
-        flash("Habit name is required", "error")
-        return redirect(url_for("habits_blueprint.index"))
-
     user_id = session.get("user_id")
     if not user_id:
-        flash("You must be logged in to add a habit", "error")
         return redirect(url_for("auth.login"))
+    if request.method == "POST":
+        habit_name = request.form.get("habit_name", "").strip()
+        if not habit_name:
+            flash("Habit name cannot be empty", "error")
+            return redirect(url_for("habits.index"))
+        if current_app.db.create_habit(user_id, habit_name):
+            flash("Habit added successfully", "success")
+        else:
+            flash("Failed to create habit", "error")
+        return redirect(url_for("habits.index"))
+    # For GET, pass a default selected_date (current UTC date)
+    return render_template("habits/add_habit.html", title="Add habit", selected_date=datetime.utcnow())
 
-        current_app.db.create_habit(user_id, habit_name)
-        flash("Habit added successfully!", "success")
-        return redirect(url_for("habits_blueprint.index"))
-    return render_template("habits/add_habit.html", title="Add habit")
 
-
-@habits_blueprint.route("/complete", methods=["POST"])
+@habits.route("/complete", methods=["POST"])
 def complete_habit():
-    habit_id = request.form.get("habit_id")
-
-    if not habit_id:
-        flash("Invalid habit", "error")
-        return redirect(url_for("habits_blueprint.index"))
-
     user_id = session.get("user_id")
     if not user_id:
-        flash("You must be logged in to complete a habit", "error")
         return redirect(url_for("auth.login"))
+    habit_id = request.form.get("habit_id")
+    date_str = request.form.get("date")
+    try:
+        date = datetime.strptime(date_str, "%Y-%m-%d")
+    except ValueError:
+        flash("Invalid date format", "error")
+        return redirect(url_for("habits.index"))
+    if current_app.db.complete_habit(user_id, habit_id, date):
+        flash("Habit completed!", "success")
+    else:
+        flash("Failed to complete habit", "error")
+    return redirect(url_for("habits.index", date=date_str))
 
-    current_app.db.complete_habit(user_id, habit_id)
-    flash("Habit marked as completed!", "success")
-    return redirect(url_for("habits_blueprint.index", date=date))
 
-@habits_blueprint.route("/delete/<habit_id>", methods=["POST"])
+@habits.route("/uncomplete", methods=["POST"])
+def uncomplete():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect(url_for("auth.login"))
+    habit_id = request.form.get("habit_id")
+    date_str = request.form.get("date")
+    if current_app.db.uncomplete_habit(user_id, habit_id, date_str):
+        flash("Completion removed", "success")
+    else:
+        flash("Failed to remove completion", "error")
+    return redirect(url_for("habits.index", date=date_str))
+
+
+@habits.route("/delete/<habit_id>", methods=["POST"])
 def delete_habit(habit_id):
     user_id = session.get("user_id")
     if not user_id:
-        flash("You must be logged in to delete a habit", "error")
         return redirect(url_for("auth.login"))
-
-    habit = current_app.db.get_habit_by_id(habit_id, user_id)
-    if not habit:
-        flash("Habit not found", "error")
-        return redirect(url_for("habits_blueprint.index"))
-
-    current_app.db.delete_habit(habit_id)
-    flash("Habit deleted successfully!", "success")
-    return redirect(url_for("habits_blueprint.index"))
+    if current_app.db.delete_habit(habit_id, user_id):
+        flash("Habit deleted", "success")
+    else:
+        flash("Failed to delete habit", "error")
+    return redirect(url_for("habits.index"))
 
 
-@habits_blueprint.route("/edit/<habit_id>", methods=["GET", "POST"])
+@habits.route("/edit/<habit_id>", methods=["GET", "POST"])
 def edit_habit(habit_id):
     user_id = session.get("user_id")
     if not user_id:
-        flash("You must be logged in to edit an habit", "error")
         return redirect(url_for("auth.login"))
+    habit = current_app.db.get_habit_by_id(habit_id, user_id)
+    if not habit:
+        flash("Habit not found", "error")
+        return redirect(url_for("habits.index"))
+    if request.method == "POST":
+        new_name = request.form.get("habit_name", "").strip()
+        if not new_name:
+            flash("Habit name cannot be empty", "error")
+            return redirect(url_for("habits.edit_habit", habit_id=habit_id))
+        if current_app.db.update_habit_name(habit_id, new_name):
+            flash("Habit updated", "success")
+            return redirect(url_for("habits.index"))
+        else:
+            flash("Failed to update habit", "error")
+    return render_template("habits/edit_habit.html", habit=habit)
