@@ -22,7 +22,7 @@ def register():
         if user:
             session["user_id"] = str(user["_id"])
             flash("Registration successful", "success")
-            return redirect(url_for("habits_blueprint.index"))
+            return redirect(url_for("habits.index"))
         else:
             flash("Registration failed", "error")
 
@@ -43,7 +43,7 @@ def login():
         if user and current_app.db.verify_password(user, password):
             session["user_id"] = str(user["_id"])
             flash("Login successful!", "success")
-            return redirect(url_for("habits_blueprint.index"))
+            return redirect(url_for("habits.index"))
         else:
             flash("Invalid email or password", "error")
 
