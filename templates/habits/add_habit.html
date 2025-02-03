@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+
 {% block main_content %}
   <form class="form" method="POST" action="{{ url_for('habits.add_habit') }}">
     <textarea class="form__input" id="habit" name="habit_name" rows="3" placeholder="Add a new daily habit"></textarea>
