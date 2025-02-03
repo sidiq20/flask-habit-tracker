@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 
 {% block main_content %}
-  <form class="form" method="POST">
-    <textarea class="form__input" id="habit_name" name="habit_name" value="{{ habit.name }}" rows="3">{{ habit.name }}</textarea>
+  <form class="form" method="POST" action="{{ url_for('habits.edit_habit', habit_id=habit._id) }}">
+    <textarea class="form__input" id="habit" name="habit_name" rows="3" placeholder="Edit your habit">{{ habit.name }}</textarea>
     <button class="form__button" type="submit">Update</button>
   </form>
 {% endblock %}
