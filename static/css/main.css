@@ -11,6 +11,7 @@
   right: 1rem;
   z-index: 1000;
   max-width: 300px;
+  opacity: 0.9;
 }
 
 .flash-message {
@@ -84,6 +85,13 @@ body {
   transform-style: preserve-3d;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.dates__link--disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
 
 .header:active {
   transform: translateY(4px);
