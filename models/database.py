@@ -164,4 +164,5 @@ class Database:
         }))
 
     def get_habits_needing_reminder(self, current_hour):
-        return self.collection.find({"reminderTime": current_hour})
+        return self.db.habits.find({"reminderTime": current_hour})
+
