@@ -1,8 +1,9 @@
+# app.py
 import datetime
-import wraps
 from flask import Flask, session, redirect, url_for, flash, request
 from routes.pages import pages
-from routes.habits import habits  # Our blueprint defined above is named "habits"
+from routes.habits import habits
+from routes.auth import auth
 from models.database import Database
 from services.reminder_service import ReminderService
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -19,41 +20,27 @@ def create_app():
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-here')
     app.db = Database()
 
-    def login_required(f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            if 'user_id' not in session:
-                flash('Please log in first', 'error')
-                return redirect(url_for('auth.login'))
-            return f(*args, **kwargs)
-        return decorated_function
-
-    def prevent_future_completion(f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            date_str = request.form.get('date')
-            if date_str:
-                try:
-                    completion_date = datetime.datetime.fromisoformat(date_str)
-                    if completion_date.date() > datetime.datetime.now().date():
-                        flash("You can't complete habits for future dates", 'error')
-                        return redirect(url_for('habits.index'))
-                except ValueError:
-                    flash('Invalid date format', 'error')
-                    return redirect(url_for('habits.index'))
-            return f(*args, **kwargs)
-        return decorated_function
-
-    app.login_required = login_required
-    app.prevent_future_completion = prevent_future_completion
-
     # Register blueprints
-    app.register_blueprint(pages)  # For any extra pages (if you use them)
-    from routes.auth import auth
+    app.register_blueprint(pages)
     app.register_blueprint(auth, url_prefix="/auth")
     app.register_blueprint(habits, url_prefix="/habits")
 
-    # Set up reminder scheduler (if using)
+    @app.context_processor
+    def inject_date_helpers():
+        from datetime import datetime, timedelta
+        def date_range(selected_date, days=7):
+            # This returns a list of datetime objects from 3 days before to 3 days after selected_date.
+            return [selected_date + timedelta(days=i - 3) for i in range(days)]
+
+        default_date = datetime.utcnow()  # using UTC
+        return dict(
+            date_range=date_range,
+            timedelta=timedelta,
+            selected_date=default_date,
+            datetime=datetime
+        )
+
+    # Set up reminder scheduler (unchanged)
     scheduler = BackgroundScheduler()
     reminder_service = ReminderService()
     scheduler.add_job(
