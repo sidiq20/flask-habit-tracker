@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 
 pages = Blueprint(
-    "habits", __name__, template_folder="templates", static_folder="static"
+    "pages", __name__, template_folder="templates", static_folder="static"
 )
 
 def today_at_midnight():
@@ -49,7 +49,7 @@ def index():
     except Exception as e:
         flash(f"An unexpected error occurred: {str(e)}", "error")
 
-    return redirect(url_for("habits_blueprint.index"))
+    return redirect(url_for("pages.index"))
 
 @pages.route("/complete", methods=["POST"])
 def complete():
@@ -57,23 +57,23 @@ def complete():
         date_string = request.form.get("date")
         if not date_string:
             flash("Date is required", "error")
-            return redirect(url_for("habits_blueprint.index"))
+            return redirect(url_for("pages.index"))
 
         date = datetime.fromisoformat(date_string)
         habit_id = request.form.get("habitId")
         if not habit_id:
             flash("Habit ID is required", "error")
-            return redirect(url_for("habits_blueprint.index"))
+            return redirect(url_for("pages.index"))
 
         if current_app.db.complete_habit(habit_id, date):
             flash("Habit marked as complete!", "success")
         else:
             flash("Failed to complete habit", "error")
 
-        return redirect(url_for("habits_blueprint.index", date=date_string))
+        return redirect(url_for("pages.index", date=date_string))
     except ValueError as e:
         flash(f"Invalid date format: {str(e)}", "error")
     except Exception as e:
         flash(f"An unexpected error occurred: {str(e)}", "error")
 
-    return redirect(url_for("habits_blueprint.index"))
+    return redirect(url_for("pages.index"))
