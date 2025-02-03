@@ -10,7 +10,7 @@
   <body>
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="flash-messages">
+        <div class="flash-messages" id="flash-messages">
           {% for category, message in messages %}
             <div class="flash-message flash-{{ category }}">{{ message }}</div>
           {% endfor %}
@@ -24,19 +24,47 @@
       {% if "add" not in request.endpoint %}
         <a href="{{ url_for('habits.add_habit') }}" class="header__link">+ Add new</a>
       {% endif %}
+      {% if not session.get("user_id") %}
+        <a href="{{ url_for('auth.login') }}" class="header__link">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="header__link">Register</a>
+      {% endif %}
     </header>
     <main class="main">
       <section class="dates">
+        {# Set today's date for comparison. We assume datetime is injected into the context #}
+        {% set today = datetime.utcnow().date() %}
         {% for date in date_range(selected_date) %}
-          <a class="dates__link {{ 'dates__link--selected' if date.strftime('%Y-%m-%d') == selected_date.strftime('%Y-%m-%d') else '' }}"
-             href="{{ url_for('habits.index', date=date.strftime('%Y-%m-%d')) }}">
-            <time class="date" datetime="{{ date.strftime('%Y-%m-%d') }}">
-              <span>{{ date.strftime('%a %d') }}</span>
-            </time>
-          </a>
+          {% set date_str = date.strftime('%Y-%m-%d') %}
+          {% if date.date() > today %}
+            {# Future date: render as a span (non-clickable) and add a disabled CSS class #}
+            <span class="dates__link dates__link--disabled">
+              <time class="date" datetime="{{ date_str }}">
+                <span>{{ date.strftime('%a') }}</span>
+                <span>{{ date.strftime('%d') }}</span>
+              </time>
+            </span>
+          {% else %}
+            <a class="dates__link {{ 'dates__link--selected' if date_str == selected_date.strftime('%Y-%m-%d') else '' }}"
+               href="{{ url_for('habits.index', date=date_str) }}">
+              <time class="date" datetime="{{ date_str }}">
+                <span>{{ date.strftime('%a') }}</span>
+                <span>{{ date.strftime('%d') }}</span>
+              </time>
+            </a>
+          {% endif %}
         {% endfor %}
       </section>
       {% block main_content %}{% endblock %}
     </main>
+    <script>
+      // Flash messages fade out after 5 seconds.
+      setTimeout(function() {
+        var flashMessages = document.getElementById('flash-messages');
+        if (flashMessages) {
+          flashMessages.classList.add('fade-out');
+          setTimeout(function() { flashMessages.remove(); }, 1000);
+        }
+      }, 5000);
+    </script>
   </body>
 </html>
