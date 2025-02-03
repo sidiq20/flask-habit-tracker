@@ -5,16 +5,15 @@ from bson import ObjectId
 # Define the blueprint with the name "habits"
 habits = Blueprint("habits", __name__)
 
-
-# Return a list of datetime objects for the past `days` days (most recent last)
+# Helper function: Return a list of datetime objects for a 7‑day range centered on selected_date.
 def date_range(selected_date, days=7):
-    return [(selected_date - timedelta(days=i)) for i in range(days)][::-1]
+    # Returns dates from 3 days before to 3 days after the selected_date.
+    return [selected_date + timedelta(days=i - 3) for i in range(days)]
 
-
-# Inject helpers into the template context so we can use timedelta and date_range
+# Inject helpers into the Jinja context so that both date_range and timedelta are available.
 @habits.context_processor
 def inject_helpers():
-    return dict(timedelta=timedelta, date_range=date_range)
+    return dict(date_range=date_range, timedelta=timedelta)
 
 
 @habits.route("/")
@@ -32,11 +31,8 @@ def index():
 
     habits_list = current_app.db.get_user_habits(user_id)
     completions = current_app.db.get_habit_completions(user_id)
-    # Build a set of (habit_id, date) pairs as strings
-    completion_dates = {
-        (str(comp['habitId']), comp['date'])
-        for comp in completions
-    }
+    # Build a set of (habit_id, date) pairs from completions.
+    completion_dates = {(str(comp['habitId']), comp['date']) for comp in completions}
 
     return render_template(
         'habits/index.html',
@@ -62,9 +58,8 @@ def add_habit():
         else:
             flash("Failed to create habit", "error")
         return redirect(url_for("habits.index"))
-    # For GET, pass a default selected_date (current UTC date)
+    # For GET, pass the current UTC date as the selected_date (as a string)
     return render_template("habits/add_habit.html", title="Add habit", selected_date=datetime.utcnow())
-
 
 @habits.route("/complete", methods=["POST"])
 def complete_habit():
@@ -84,7 +79,6 @@ def complete_habit():
         flash("Failed to complete habit", "error")
     return redirect(url_for("habits.index", date=date_str))
 
-
 @habits.route("/uncomplete", methods=["POST"])
 def uncomplete():
     user_id = session.get("user_id")
@@ -98,7 +92,6 @@ def uncomplete():
         flash("Failed to remove completion", "error")
     return redirect(url_for("habits.index", date=date_str))
 
-
 @habits.route("/delete/<habit_id>", methods=["POST"])
 def delete_habit(habit_id):
     user_id = session.get("user_id")
@@ -109,7 +102,6 @@ def delete_habit(habit_id):
     else:
         flash("Failed to delete habit", "error")
     return redirect(url_for("habits.index"))
-
 
 @habits.route("/edit/<habit_id>", methods=["GET", "POST"])
 def edit_habit(habit_id):
