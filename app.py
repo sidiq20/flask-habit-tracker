@@ -57,4 +57,4 @@ if __name__ == "__main__":
     app = create_app()
     with app.app_context():
         print(app.url_map)
-    app.run(debug=True, port=3000)
+    app.run(debug=True, use_reloader=False, port=3000)

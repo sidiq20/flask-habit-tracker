@@ -3,41 +3,44 @@
 {% block main_content %}
 <section class="habits">
   {% if not habits %}
-    <div class="habits__empty">
-      <p>No habits found. <a href="{{ url_for('habits.add_habit') }}">Add your first habit</a></p>
+    <div class="habit-empty">
+      <h2>Welcome to Your Habit Tracker! 🎯</h2>
+      <p>Start building better habits today by <a href="{{ url_for('habits.add_habit') }}">adding your first habit</a>.</p>
     </div>
   {% else %}
-    {% for habit in habits %}
-      {# Determine if this habit is completed on the selected date #}
-      {% set is_completed = (habit._id|string, selected_date.strftime('%Y-%m-%d')) in completion_dates %}
-      <div class="habit {{ 'completed' if is_completed else '' }}">
-        <div class="habit__header">
-          <h3 class="habit__name">{{ habit.name }}</h3>
-          {% if habit.streak > 0 %}
-            <div class="habit__streak">🔥 {{ habit.streak }} day streak</div>
-          {% endif %}
-        </div>
-        <div class="habit__actions">
-          {% if is_completed %}
-            <form method="POST" action="{{ url_for('habits.uncomplete') }}">
-              <input type="hidden" name="habit_id" value="{{ habit._id }}">
-              <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}">
-              <button type="submit" class="btn btn--checked">✓ Completed</button>
+    <div class="habit-list">
+      {% for habit in habits %}
+        {# Determine if this habit is completed on the selected date #}
+        {% set is_completed = (habit._id|string, selected_date.strftime('%Y-%m-%d')) in completion_dates %}
+        <div class="habit {{ 'completed' if is_completed else '' }}">
+          <div class="habit__info">
+            <h3 class="habit__name">{{ habit.name }}</h3>
+            {% if habit.streak > 0 %}
+              <span class="habit__streak">🔥 {{ habit.streak }} day streak</span>
+            {% endif %}
+          </div>
+          <div class="habit__elements">
+            {% if is_completed %}
+              <form method="POST" action="{{ url_for('habits.uncomplete') }}">
+                <input type="hidden" name="habit_id" value="{{ habit._id }}">
+                <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}">
+                <button type="submit" class="habit__button--uncomplete">✓ Done</button>
+              </form>
+            {% else %}
+              <form method="POST" action="{{ url_for('habits.complete_habit') }}">
+                <input type="hidden" name="habit_id" value="{{ habit._id }}">
+                <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}">
+                <button type="submit" class="habit__button">Complete</button>
+              </form>
+            {% endif %}
+            <a href="{{ url_for('habits.edit_habit', habit_id=habit._id) }}" class="habit__link">Edit</a>
+            <form method="POST" action="{{ url_for('habits.delete_habit', habit_id=habit._id) }}" class="habit__form">
+              <button type="submit" class="habit__button--delete">Delete</button>
             </form>
-          {% else %}
-            <form method="POST" action="{{ url_for('habits.complete_habit') }}">
-              <input type="hidden" name="habit_id" value="{{ habit._id }}">
-              <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}">
-              <button type="submit" class="btn">Mark Complete</button>
-            </form>
-          {% endif %}
-          <form method="POST" action="{{ url_for('habits.delete_habit', habit_id=habit._id) }}">
-            <button type="submit" class="btn btn--delete">Delete</button>
-          </form>
-          <a href="{{ url_for('habits.edit_habit', habit_id=habit._id) }}" class="btn btn--edit">Edit</a>
+          </div>
         </div>
-      </div>
-    {% endfor %}
+      {% endfor %}
+    </div>
   {% endif %}
 </section>
 {% endblock %}
