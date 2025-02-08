@@ -31,7 +31,7 @@ def index():
 
     habits_list = current_app.db.get_user_habits(user_id)
     completions = current_app.db.get_habit_completions(user_id)
-    # Build a set of (habit_id, date) pairs from completions.
+
     completion_dates = {(str(comp['habitId']), comp['date']) for comp in completions}
 
     return render_template(
