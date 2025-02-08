@@ -2,15 +2,11 @@ from flask import Blueprint, request, redirect, url_for, render_template, flash,
 from datetime import datetime, timedelta
 from bson import ObjectId
 
-# Define the blueprint with the name "habits"
 habits = Blueprint("habits", __name__)
 
-# Helper function: Return a list of datetime objects for a 7‑day range centered on selected_date.
 def date_range(selected_date, days=7):
-    # Returns dates from 3 days before to 3 days after the selected_date.
     return [selected_date + timedelta(days=i - 3) for i in range(days)]
 
-# Inject helpers into the Jinja context so that both date_range and timedelta are available.
 @habits.context_processor
 def inject_helpers():
     return dict(date_range=date_range, timedelta=timedelta)

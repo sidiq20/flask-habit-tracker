@@ -37,7 +37,7 @@ def index():
                 completions.append(str(habit['_id']))
 
         return render_template(
-            "index.html",
+            "habits/index.html",
             habits=habits,
             selected_date=selected_date,
             completions=completions,

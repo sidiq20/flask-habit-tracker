@@ -86,12 +86,17 @@ body {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.header__nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
 .dates__link--disabled {
   opacity: 0.5;
   cursor: default;
   pointer-events: none;
 }
-
 
 .header:active {
   transform: translateY(4px);
@@ -114,6 +119,17 @@ body {
   border-color: #000;
   background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
+}
+
+.header__link--logout {
+  background-color: #ff4d4d;
+  color: white;
+  border-color: #000;
+}
+
+.header__link--logout:hover {
+  background-color: #ff6666;
+  color: white;
 }
 
 .header__logo {
@@ -285,15 +301,23 @@ body {
 
 .habit__button {
   width: 100%;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   font-size: inherit;
   font-family: inherit;
-  text-align: left;
-  border: none;
-  background: none;
+  text-align: center;
+  border: 3px solid black;
+  background: #4caf50;
   cursor: pointer;
-  color: inherit;
+  color: white;
   font-weight: bold;
+  border-radius: 12px;
+  box-shadow: 3px 3px 0px black;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.habit__button:hover {
+  background: #45a049;
+  transform: scale(1.1);
 }
 
 .habit__elements {
@@ -368,6 +392,11 @@ body {
   margin-top: 2rem;
 }
 
+.habit-empty h2 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
 .habit-empty a {
   color: #ff6347;
   text-decoration: none;
@@ -377,7 +406,6 @@ body {
 .habit-empty a:hover {
   text-decoration: underline;
 }
-
 
 @media screen and (max-width: 768px) {
   .header {
@@ -393,7 +421,7 @@ body {
   }
 
   .header__link {
-    font-size: 2rem;
+    font-size: 1rem;
     padding: 0.4rem 0.8rem;
   }
 
@@ -440,8 +468,12 @@ body {
     font-size: 1.5rem;
   }
 
+  .header__nav {
+    gap: 0.5rem;
+  }
+
   .header__link {
-    font-size: 2rem;
+    font-size: 0.9rem;
     padding: 0.3rem 0.6rem;
   }
 
