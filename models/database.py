@@ -43,7 +43,22 @@ class Database:
                 'userId': ObjectId(user_id),
                 'name': name.strip(),
                 'createdAt': datetime.utcnow(),
-                'streak': 0
+                'streak': 0,
+                'total_completion': 0,
+                'best_streak': 0,
+                'template': template,
+                'milestone': [
+                    {'count': 7, 'achieved': False, 'name': 'Week Warrior'},
+                    {'count': 30, 'achieved': False, 'name': 'Monthly Master'},
+                    {'count': 100, 'achieved': False, 'name': 'Century Club'},
+                    {'count': 300, 'achieved': False, 'name': 'Year Champion'},
+                ],
+                'statistics': {
+                    'weekly_completion_rate': 0,
+                    'monthly_completion_rate': 0,
+                    'best_performance_days': [],
+                    'worst_performing_days': []
+                }
             }
             result = self.db.habits.insert_one(habit)
             habit['_id'] = result.inserted_id
