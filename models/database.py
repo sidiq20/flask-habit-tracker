@@ -17,7 +17,12 @@ class Database:
                 'email': email.lower(),
                 'password': generate_password_hash(password),
                 'timezone': timezone,
-                'createdAt': datetime.utcnow()
+                'createdAt': datetime.utcnow(),
+                'achievements': [],
+                'streak_protection': 1,
+                'total_completion': 0,
+                'level': 1,
+                'xp': 0,
             }
             result = self.db.users.insert_one(user)
             user['_id'] = result.inserted_id
