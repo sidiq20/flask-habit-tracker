@@ -186,3 +186,54 @@ class Database:
     def get_habits_needing_reminder(self, current_hour):
         return self.db.habits.find({"reminderTime": current_hour})
 
+    def get_habit_templates(self) -> List[dict]:
+        return list(self.db.habits.find({'templates': True}))
+
+    def get_habit_statistics(self, habit_id: str) -> dict:
+        habit = self.db.habits.find_one({'_id': ObjectId(habit_id)})
+        completions = list(self.db.completions.find({'habitId': ObjectId(habit_id)}))
+
+        total_days = (datetime.utcnow() - habit['createAt']).days + 1
+        completion_rate = len(completions) / total_days if total_days > 0 else 0
+
+        completion_dates = [c['date'] for c in completions]
+
+        day_stats = {}
+        for completion in completions:
+            date = datetime.strptime(completion['date'], '%Y-%m-%d')
+            day = date.strftime('%A')
+            day_stats[day] = day_stats.get(day, 0) + 1
+
+        sorted_days = sorted(day_stats.items(), key=lambda x: x[1], reverse=True)
+        best_days = sorted_days[:3] if sorted_days else []
+        worst_days = sorted_days[-3:] if sorted_days else []
+
+        return {
+            'completion_rate': completion_rate * 100,
+            'total_completion': len(completions),
+            'best_streak': habit['best_streak'],
+            'current_streak': habit['streak'],
+            'completion_dates': completion_dates,
+            'best_performing_days': best_days,
+            'worst_performing_days': worst_days
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
