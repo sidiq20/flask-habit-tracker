@@ -217,8 +217,27 @@ class Database:
             'best_performing_days': best_days,
             'worst_performing_days': worst_days
         }
+    def use_streak_protection(self, user_id: str, habit_id: str, date: str) -> bool:
+        try:
+            user = self.db.users.find_one({'_id': ObjectId(user_id)})
+            if user and user.get('streaker_protection', 0) > 0:
+                self.db.completions.insert_one({
+                    'habitId': ObjectId(habit_id),
+                    'userId': ObjectId(user_id),
+                    'date': date,
+                    'protected': True,
+                    'createdAt': datetime.utcnow()
+                })
 
-
+                self.db.users.update_one(
+                    {'_id': ObjectId(user_id)},
+                    {'$inc': {'streak_protection': -1}}
+                )
+                return True
+            return False
+        except Exception as e:
+            print(f"Error using streak protection: {e}")
+            return False
 
 
 
