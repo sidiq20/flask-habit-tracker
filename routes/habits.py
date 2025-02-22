@@ -12,6 +12,96 @@ def inject_helpers():
     return dict(date_range=date_range, timedelta=timedelta)
 
 
+@habits.route("/habit_templates", methods=["GET", "POST"])
+def habit_templates():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect(url_for("auth.login"))
+
+    if request.method == "POST":
+        template_id = request.form.get("template_id")
+
+        if not template_id:
+            flash("invalid template selection.", "error")
+            return redirect(url_for("habits.habit_templates"))
+
+        # Get all the templates and find the one with matching ID
+        template = current_app.db.get_habit_templates()
+        template = next((t for t in template if str(t['_id']) == template_id), None)
+
+        if not template:
+            flash("Template not found.", "error")
+            return redirect(url_for("habits.habit_templates"))
+
+        # Create new habit from template
+        if current_app.db.create_habit(user_id, template["name"], template.get("category")):
+            flash("Habit to created successfully", "success")
+        else:
+            flash("Failed to create habit.", "error")
+        return redirect(url_for("habits.index"))
+
+    templates = current_app.db.get_habit_templates()
+    return render_template("habits/templates.html", templates=templates)
+
+
+@habits.route("/statistics/<habit_id>")
+def habit_statistics(habit_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect(url_for("auth.login"))
+
+    stats = current_app.db.get_habit_statistics(habit_id)
+    return render_template("habits/statistics.html", stats=stats)
+
+
+@habits.route("/categories")
+def categories():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect(url_for("auth.login"))
+
+    categories = current_app.db.get_habit_categories(user_id)
+    return render_template("habits/categories.html", categories=categories)
+
+
+@habits.route("/share/<habit_id>", methods=["POST"])
+def share_habit(habit_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect(url_for("auth.login"))
+
+    email = request.form.get("email")
+    if current_app.db.share_habit(habit_id, email):
+        flash("Habit shared successfully!", "success")
+    else:
+        flash("Failed to share habit", "error")
+    return redirect(url_for("habits.index"))
+
+
+@habits.route("/protect-streak/<habit_id>", methods=["POST"])
+def protect_streak(habit_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect(url_for("auth.login"))
+
+    date = request.form.get("date")
+    if current_app.db.use_streak_protection(user_id, habit_id, date):
+        flash("Streak protected!", "success")
+    else:
+        flash("No streak protection available", "error")
+    return redirect(url_for("habits.index"))
+
+
+@habits.route("/achievements")
+def achievements():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect(url_for("auth.login"))
+
+    achievements = current_app.db.get_user_achievements(user_id)
+    return render_template("habits/achievements.html", achievements=achievements)
+
+
 @habits.route("/")
 def index():
     user_id = session.get("user_id")
