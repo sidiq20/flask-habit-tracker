@@ -60,6 +60,42 @@
       </section>
       {% block main_content %}{% endblock %}
     </main>
+    {% if session.get("user_id") %}
+    <footer class="footer">
+      <div class="footer__content">
+        <div class="footer__section">
+          <h3>Quick Links</h3>
+          <nav class="footer__nav">
+            <a href="{{ url_for('habits.index') }}">My Habits</a>
+            <a href="{{ url_for('habits.categories') }}">Categories</a>
+            <a href="{{ url_for('habits.achievements') }}">Achievements</a>
+            <a href="{{ url_for('habits.habit_templates') }}">Templates</a>
+          </nav>
+        </div>
+        <div class="footer__section">
+          <h3>Categories</h3>
+          <div class="footer__categories">
+            <a href="{{ url_for('habits.categories') }}#health">Health</a>
+            <a href="{{ url_for('habits.categories') }}#mindfulness">Mindfulness</a>
+            <a href="{{ url_for('habits.categories') }}#productivity">Productivity</a>
+            <a href="{{ url_for('habits.categories') }}#learning">Learning</a>
+          </div>
+        </div>
+        <div class="footer__section">
+          <h3>Achievements</h3>
+          <div class="footer__achievements">
+            <span>🏆 Week Warrior</span>
+            <span>🌟 Monthly Master</span>
+            <span>💯 Century Club</span>
+            <span>👑 Year Champion</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2024 Streaker. All rights reserved.</p>
+      </div>
+    </footer>
+    {% endif %}
     <script>
       // Flash messages fade out after 5 seconds.
       setTimeout(function() {
