@@ -10,7 +10,6 @@
   {% else %}
     <div class="habit-list">
       {% for habit in habits %}
-        {# Determine if this habit is completed on the selected date #}
         {% set is_completed = (habit._id|string, selected_date.strftime('%Y-%m-%d')) in completion_dates %}
         <div class="habit {{ 'completed' if is_completed else '' }}">
           <div class="habit__info">
@@ -24,7 +23,7 @@
               <form method="POST" action="{{ url_for('habits.uncomplete') }}">
                 <input type="hidden" name="habit_id" value="{{ habit._id }}">
                 <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}">
-                <button type="submit" class="habit__button--uncomplete">✓ Done</button>
+                <button type="submit" class="habit__button--uncomplete">Undo</button>
               </form>
             {% else %}
               <form method="POST" action="{{ url_for('habits.complete_habit') }}">
@@ -33,6 +32,23 @@
                 <button type="submit" class="habit__button">Complete</button>
               </form>
             {% endif %}
+
+            <!-- Statistics Button -->
+            <a href="{{ url_for('habits.habit_statistics', habit_id=habit._id) }}" class="habit__button--stats">
+              📊 Stats
+            </a>
+
+            <!-- Share Button -->
+            <button onclick="showShareModal('{{ habit._id }}')" class="habit__button--share">
+              🔗 Share
+            </button>
+
+            <!-- Protect Streak Button -->
+            <form method="POST" action="{{ url_for('habits.protect_streak', habit_id=habit._id) }}" class="habit__form">
+              <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}">
+              <button type="submit" class="habit__button--protect">🛡️ Protect</button>
+            </form>
+
             <a href="{{ url_for('habits.edit_habit', habit_id=habit._id) }}" class="habit__link">Edit</a>
             <form method="POST" action="{{ url_for('habits.delete_habit', habit_id=habit._id) }}" class="habit__form">
               <button type="submit" class="habit__button--delete">Delete</button>
@@ -43,4 +59,41 @@
     </div>
   {% endif %}
 </section>
+
+<!-- Share Modal -->
+<div id="shareModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Share Habit</h2>
+    <form id="shareForm" method="POST" action="">
+      <div class="form-group">
+        <label for="email">Email address to share with:</label>
+        <input type="email" id="email" name="email" required class="form-input">
+      </div>
+      <button type="submit" class="form__button">Share</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function showShareModal(habitId) {
+  const modal = document.getElementById('shareModal');
+  const form = document.getElementById('shareForm');
+  form.action = `/habits/share/${habitId}`;
+  modal.style.display = "block";
+}
+
+// Close modal when clicking the X
+document.querySelector('.close').onclick = function() {
+  document.getElementById('shareModal').style.display = "none";
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('shareModal');
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
 {% endblock %}
