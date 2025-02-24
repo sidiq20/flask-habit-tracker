@@ -1,0 +1,155 @@
+/* Statistics Page Styles */
+.statistics-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, #fff5f5, #fed7d7);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.statistics-title {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+  text-shadow: 2px 2px 0 #fff;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2rem;
+  border: 3px solid black;
+  border-radius: 16px;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.8);
+}
+
+.stat-card h3 {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.streaks {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.streaks span {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.performance-list {
+  list-style: none;
+  padding: 0;
+}
+
+.performance-list li {
+  padding: 0.75rem;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  color: #666;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.performance-list li:last-child {
+  border-bottom: none;
+}
+
+.calendar-view {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2rem;
+  border: 3px solid black;
+  border-radius: 16px;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.8);
+  margin-top: 2rem;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.month {
+  text-align: center;
+}
+
+.month h4 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.day {
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
+}
+
+.day.completed {
+  background: #4caf50;
+  color: white;
+}
+
+@media screen and (max-width: 768px) {
+  .statistics-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .statistics-title {
+    font-size: 2rem;
+  }
+
+  .stat-card {
+    padding: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .statistics-container {
+    padding: 1rem;
+  }
+
+  .statistics-title {
+    font-size: 1.75rem;
+  }
+
+  .calendar-view {
+    padding: 1rem;
+  }
+}
