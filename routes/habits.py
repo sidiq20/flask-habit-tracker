@@ -1,6 +1,7 @@
-from flask import Blueprint, request, redirect, url_for, render_template, flash, session, current_app
+from flask import Blueprint, request, redirect, url_for, render_template, flash, session, current_app, jsonify
 from datetime import datetime, timedelta
 from bson import ObjectId
+import json
 
 habits = Blueprint("habits", __name__)
 
@@ -10,7 +11,6 @@ def date_range(selected_date, days=7):
 @habits.context_processor
 def inject_helpers():
     return dict(date_range=date_range, timedelta=timedelta)
-
 
 @habits.route("/habit_templates", methods=["GET", "POST"])
 def habit_templates():
@@ -22,27 +22,26 @@ def habit_templates():
         template_id = request.form.get("template_id")
 
         if not template_id:
-            flash("invalid template selection.", "error")
+            flash("Invalid template selection.", "error")
             return redirect(url_for("habits.habit_templates"))
 
-        # Get all the templates and find the one with matching ID
-        template = current_app.db.get_habit_templates()
-        template = next((t for t in template if str(t['_id']) == template_id), None)
+        # Get template details
+        templates = current_app.db.get_habit_templates()
+        template = next((t for t in templates if str(t['_id']) == template_id), None)
 
         if not template:
             flash("Template not found.", "error")
             return redirect(url_for("habits.habit_templates"))
 
-        # Create new habit from template
-        if current_app.db.create_habit(user_id, template["name"], template.get("category")):
-            flash("Habit to created successfully", "success")
+        # Create new habit from template using the description as the name
+        if current_app.db.create_habit(user_id, template["description"], template.get("category")):
+            flash("Habit created successfully!", "success")
         else:
             flash("Failed to create habit.", "error")
         return redirect(url_for("habits.index"))
 
     templates = current_app.db.get_habit_templates()
     return render_template("habits/templates.html", templates=templates)
-
 
 @habits.route("/statistics/<habit_id>")
 def habit_statistics(habit_id):
@@ -53,7 +52,6 @@ def habit_statistics(habit_id):
     stats = current_app.db.get_habit_statistics(habit_id)
     return render_template("habits/statistics.html", stats=stats)
 
-
 @habits.route("/categories")
 def categories():
     user_id = session.get("user_id")
@@ -62,7 +60,6 @@ def categories():
 
     categories = current_app.db.get_habit_categories(user_id)
     return render_template("habits/categories.html", categories=categories)
-
 
 @habits.route("/share/<habit_id>", methods=["POST"])
 def share_habit(habit_id):
@@ -77,7 +74,6 @@ def share_habit(habit_id):
         flash("Failed to share habit", "error")
     return redirect(url_for("habits.index"))
 
-
 @habits.route("/protect-streak/<habit_id>", methods=["POST"])
 def protect_streak(habit_id):
     user_id = session.get("user_id")
@@ -91,7 +87,6 @@ def protect_streak(habit_id):
         flash("No streak protection available", "error")
     return redirect(url_for("habits.index"))
 
-
 @habits.route("/achievements")
 def achievements():
     user_id = session.get("user_id")
@@ -100,7 +95,6 @@ def achievements():
 
     achievements = current_app.db.get_user_achievements(user_id)
     return render_template("habits/achievements.html", achievements=achievements)
-
 
 @habits.route("/")
 def index():
@@ -117,8 +111,9 @@ def index():
 
     habits_list = current_app.db.get_user_habits(user_id)
     completions = current_app.db.get_habit_completions(user_id)
+    print("completions", completions)
 
-    completion_dates = {(str(comp['habitId']), comp['date']) for comp in completions}
+    completion_dates = {(str(comp.get('habitId', '')), comp['date']) for comp in completions if 'habitId' in comp}
 
     return render_template(
         'habits/index.html',
@@ -127,7 +122,6 @@ def index():
         completion_dates=completion_dates,
         today=datetime.utcnow().strftime("%Y-%m-%d")
     )
-
 
 @habits.route("/add", methods=["GET", "POST"])
 def add_habit():
