@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block main_content %}
+<div class="achievements-container">
+  <h2 class="achievements-title">Your Achievements</h2>
+  
+  <div class="achievements-grid">
+    {% for achievement in achievements %}
+    <div class="achievement-card">
+      <div class="achievement-icon">{{ achievement.icon }}</div>
+      <h3 class="achievement-name">{{ achievement.name }}</h3>
+      <p class="achievement-description">{{ achievement.description }}</p>
+      <div class="achievement-date">Earned on {{ achievement.date.strftime('%B %d, %Y') }}</div>
+    </div>
+    {% else %}
+    <div class="no-achievements">
+      <h3>No Achievements Yet</h3>
+      <p>Start completing your habits to earn achievements!</p>
+      <a href="{{ url_for('habits.index') }}" class="achievement-cta">Back to Habits</a>
+    </div>
+    {% endfor %}
+  </div>
+  
+  <div class="upcoming-achievements">
+    <h3>Next Achievements</h3>
+    <div class="upcoming-grid">
+      <div class="upcoming-card">
+        <div class="upcoming-icon">🏃</div>
+        <h4>Week Warrior</h4>
+        <p>Complete a habit for 7 days straight</p>
+        <div class="progress-bar">
+          <div class="progress" style="width: 70%"></div>
+        </div>
+        <span class="progress-text">5/7 days</span>
+      </div>
+      <div class="upcoming-card">
+        <div class="upcoming-icon">🎯</div>
+        <h4>Perfect Month</h4>
+        <p>Complete all habits for 30 days</p>
+        <div class="progress-bar">
+          <div class="progress" style="width: 40%"></div>
+        </div>
+        <span class="progress-text">12/30 days</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
