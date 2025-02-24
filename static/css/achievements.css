@@ -1,0 +1,132 @@
+/* Achievements Page Styles */
+.achievements-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, #e6f7ff, #b3e0ff);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.achievements-title {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+  text-shadow: 2px 2px 0 #fff;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.achievement-card {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2rem;
+  border: 3px solid black;
+  border-radius: 16px;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.8);
+  text-align: center;
+}
+
+.achievement-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+}
+
+.achievement-name {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.achievement-description {
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.achievement-date {
+  font-size: 0.9rem;
+  color: #888;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.upcoming-achievements {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 3px solid black;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.8);
+  margin-top: 2rem;
+}
+
+.upcoming-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.upcoming-card {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.progress-bar {
+  background: #e0e0e0;
+  height: 12px;
+  border-radius: 6px;
+  margin-top: 1rem;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: linear-gradient(45deg, #ffde59, #ffa500);
+  transition: width 1s ease-out;
+}
+
+.progress-text {
+  display: block;
+  margin-top: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+@media screen and (max-width: 768px) {
+  .achievements-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .achievements-title {
+    font-size: 2rem;
+  }
+
+  .achievement-card {
+    padding: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .achievements-container {
+    padding: 1rem;
+  }
+
+  .achievements-title {
+    font-size: 1.75rem;
+  }
+
+  .achievement-icon {
+    font-size: 3rem;
+  }
+}
