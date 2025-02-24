@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% if request.endpoint == 'habits.templates' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/templates.css') }}">
+    {% endif %}
+    {% if request.endpoint == 'habits.achievements' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/achievements.css') }}">
+    {% endif %}
+    {% if request.endpoint == 'habits.categories' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/categories.css') }}">
+    {% endif %}
+    {% if request.endpoint == 'habits.habit_statistics' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/statistics.css') }}">
+    {% endif %}
     {% block head_content %}{% endblock %}
   </head>
   <body>
@@ -12,7 +24,10 @@
       {% if messages %}
         <div class="flash-messages" id="flash-messages">
           {% for category, message in messages %}
-            <div class="flash-message flash-{{ category }}">{{ message }}</div>
+            <div class="flash-message flash-{{ category }}">
+              <span>{{ message }}</span>
+              <button onClick="this.parentElement.style.display='none'">x</button>
+            </div>
           {% endfor %}
         </div>
       {% endif %}
@@ -26,6 +41,7 @@
           {% if "add" not in request.endpoint %}
             <a href="{{ url_for('habits.add_habit') }}" class="header__link">+ Add new</a>
           {% endif %}
+          <a href="{{ url_for('habits.habit_templates') }}" class="header__link">Templates</a>
           <a href="{{ url_for('auth.logout') }}" class="header__link header__link--logout">Logout</a>
         {% else %}
           <a href="{{ url_for('auth.login') }}" class="header__link">Login</a>
@@ -33,14 +49,13 @@
         {% endif %}
       </div>
     </header>
-    <main class="main">
+    <main class="main {% if request.endpoint in ['pages.index', 'habits.templates'] %}main--full{% endif %}">
+      {% if session.get("user_id") and request.endpoint != 'habits.templates' %}
       <section class="dates">
-        {# Set today's date for comparison. We assume datetime is injected into the context #}
         {% set today = datetime.utcnow().date() %}
         {% for date in date_range(selected_date) %}
           {% set date_str = date.strftime('%Y-%m-%d') %}
           {% if date.date() > today %}
-            {# Future date: render as a span (non-clickable) and add a disabled CSS class #}
             <span class="dates__link dates__link--disabled">
               <time class="date" datetime="{{ date_str }}">
                 <span>{{ date.strftime('%a') }}</span>
@@ -58,6 +73,7 @@
           {% endif %}
         {% endfor %}
       </section>
+      {% endif %}
       {% block main_content %}{% endblock %}
     </main>
     {% if session.get("user_id") %}
@@ -97,7 +113,6 @@
     </footer>
     {% endif %}
     <script>
-      // Flash messages fade out after 5 seconds.
       setTimeout(function() {
         var flashMessages = document.getElementById('flash-messages');
         if (flashMessages) {
