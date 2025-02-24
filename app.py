@@ -1,5 +1,4 @@
-# app.py
-import datetime
+import datetime  # Import datetime here
 from flask import Flask, session, redirect, url_for, flash, request
 from routes.pages import pages
 from routes.habits import habits
@@ -15,9 +14,12 @@ print("MONGO_URI:", os.environ.get("MONGO_URI"))
 print("DB_NAME:", os.environ.get("DB_NAME"))
 print("SECRET_KEY:", os.environ.get("SECRET_KEY"))
 
+
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-here')
+    if not os.environ.get('SECRET_KEY'):
+        raise ValueError("SECRET_KEY is not set. Please set in the env")
     app.db = Database()
 
     # Register blueprints
@@ -29,7 +31,6 @@ def create_app():
     def inject_date_helpers():
         from datetime import datetime, timedelta
         def date_range(selected_date, days=7):
-            # This returns a list of datetime objects from 3 days before to 3 days after selected_date.
             return [selected_date + timedelta(days=i - 3) for i in range(days)]
 
         default_date = datetime.utcnow()  # using UTC
@@ -40,14 +41,14 @@ def create_app():
             datetime=datetime
         )
 
-    # Set up reminder scheduler (unchanged)
+    # Set up reminder scheduler
     scheduler = BackgroundScheduler()
     reminder_service = ReminderService()
     scheduler.add_job(
         reminder_service.process_reminders,
         'interval',
         hours=1,
-        next_run_time=datetime.datetime.now()
+        next_run_time=datetime.datetime.now()  # Now works since datetime is imported
     )
     scheduler.start()
 
