@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+
+{% block main_content %}
+<div class="statistics-container">
+    <h2 class="statistics-title">Habit Statistics</h2>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Completion Rate</h3>
+            <div class="stat-value">{{ "%.1f"|format(stats.completion_rate) }}%</div>
+            <div class="progress-bar">
+                <div class="progress" style="width: {{ stats.completion_rate }}%"></div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Streaks</h3>
+            <div class="streaks">
+                <div>
+                    <span>Current</span>
+                    <div class="stat-value">{{ stats.current_streak }}</div>
+                </div>
+                <div>
+                    <span>Best</span>
+                    <div class="stat-value">{{ stats.best_streak }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Best Days</h3>
+            <ul class="performance-list">
+                {% for day, count in stats.best_performing_days %}
+                <li>{{ day }}: {{ count }} completions</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Areas for Improvement</h3>
+            <ul class="performance-list">
+                {% for day, count in stats.worst_performing_days %}
+                <li>{{ day }}: {{ count }} completions</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+    <div class="calendar-view">
+        <h3>Completion Calendar</h3>
+        <div class="calendar-grid">
+            {% for month in range(1, 13) %}
+                <div class="month">
+                    <h4>{{ month }}</h4>
+                    <div class="days">
+                        {% for day in range(1, 32) %}
+                            {% set date = '%d-%02d-%02d'|format(stats.year, month, day) %}
+                            <div class="day {{ 'completed' if date in stats.completion_dates }}">
+                                {{ day }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
