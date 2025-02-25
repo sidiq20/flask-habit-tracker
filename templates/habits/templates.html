@@ -1,0 +1,177 @@
+{% extends "layout.html" %}
+
+{% block main_content %}
+<div class="templates-container">
+    <h2 class="templates-title">Habit Templates</h2>
+    <p class="templates-description">Choose from our pre-made templates to get started quickly with common habits.</p>
+
+    <div class="templates-grid">
+        {% for template in templates %}
+        <div class="template-card">
+            <div class="template-icon">{{ template.icon }}</div>
+            <h3 class="template-name">{{ template.name }}</h3>
+            <p class="template-description">{{ template.description }}</p>
+            <div class="template-meta">
+                <span class="template-category">{{ template.category }}</span>
+                <span class="template-difficulty">{{ template.difficulty }}</span>
+            </div>
+            <form method="POST" action="{{ url_for('habits.habit_templates') }}">
+                <input type="hidden" name="template_id" value="{{ template._id }}">
+                <button type="submit" class="template-button">Use Template</button>
+            </form>
+        </div>
+        {% else %}
+        <div class="no-templates">
+            <h3>No Templates Available</h3>
+            <p>Please try again later or create a custom habit.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block head_content %}
+<style>
+.templates-container {
+    max-width: 1200px;
+    margin: 1.5rem auto;
+    padding: 1rem;
+}
+
+.templates-title {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 0.75rem;
+    color: #333;
+    text-shadow: 1px 1px 0 #fff;
+}
+
+.templates-description {
+    text-align: center;
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.template-card {
+    background: white;
+    padding: 1.5rem;
+    border: 2px solid black;
+    border-radius: 12px;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.8);
+    transition: transform 0.3s ease;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.template-card:hover {
+    transform: translateY(-3px);
+}
+
+.template-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.template-name {
+    font-size: 1.25rem;
+    color: #333;
+    margin: 0;
+}
+
+.template-description {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.template-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+}
+
+.template-category,
+.template-difficulty {
+    background: #f5f5f5;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    color: #666;
+}
+
+.template-button {
+    width: 100%;
+    background: linear-gradient(45deg, #ffde59, #ffa500);
+    color: #333;
+    border: 2px solid black;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+}
+
+.template-button:hover {
+    transform: translateY(-2px);
+}
+
+.no-templates {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    background: #fff6d8;
+    border-radius: 12px;
+    border: 2px solid black;
+}
+
+@media screen and (max-width: 768px) {
+    .templates-container {
+        padding: 1rem;
+        margin: 1rem;
+    }
+
+    .templates-title {
+        font-size: 1.75rem;
+    }
+
+    .template-card {
+        padding: 1.25rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .templates-title {
+        font-size: 1.5rem;
+    }
+
+    .template-card {
+        padding: 1rem;
+    }
+
+    .template-icon {
+        font-size: 1.75rem;
+    }
+
+    .template-name {
+        font-size: 1.1rem;
+    }
+
+    .template-description {
+        font-size: 0.9rem;
+    }
+}
+</style>
+{% endblock %}
