@@ -2,6 +2,15 @@
 
 {% block main_content %}
 <section class="habits">
+  {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+      <div class="flash-message">
+        {% for category, message in messages %}
+          <div  class="flash-message {{ category }} ">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
   {% if not habits %}
     <div class="habit-empty">
       <h2>Welcome to Your Habit Tracker! 🎯</h2>
@@ -23,35 +32,33 @@
               <form method="POST" action="{{ url_for('habits.uncomplete') }}">
                 <input type="hidden" name="habit_id" value="{{ habit._id }}">
                 <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}">
-                <button type="submit" class="habit__button--uncomplete">Undo</button>
+                <button type="submit" class="habit__button--uncomplete">✖️ <span>Undo</span></button>
               </form>
             {% else %}
               <form method="POST" action="{{ url_for('habits.complete_habit') }}">
                 <input type="hidden" name="habit_id" value="{{ habit._id }}">
                 <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}">
-                <button type="submit" class="habit__button">Complete</button>
+                <button type="submit" class="habit__button">✓ <span>Complete</span></button>
               </form>
             {% endif %}
 
-            <!-- Statistics Button -->
             <a href="{{ url_for('habits.habit_statistics', habit_id=habit._id) }}" class="habit__button--stats">
-              📊 Stats
+              📊 <span>Stats</span>
             </a>
 
-            <!-- Share Button -->
-            <button onclick="showShareModal('{{ habit._id }}')" class="habit__button--share">
-              🔗 Share
-            </button>
+<!--            <button onclick="showShareModal('{{ habit._id }}')" class="habit__button&#45;&#45;share">-->
+<!--              🔗 <span>Share</span>-->
+<!--            </button>-->
 
-            <!-- Protect Streak Button -->
             <form method="POST" action="{{ url_for('habits.protect_streak', habit_id=habit._id) }}" class="habit__form">
               <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}">
-              <button type="submit" class="habit__button--protect">🛡️ Protect</button>
+              <button type="submit" class="habit__button--protect">🛡️ <span>Protect</span></button>
             </form>
 
-            <a href="{{ url_for('habits.edit_habit', habit_id=habit._id) }}" class="habit__link">Edit</a>
+            <a href="{{ url_for('habits.edit_habit', habit_id=habit._id) }}" class="habit__link">✏️ <span>Edit</span></a>
+
             <form method="POST" action="{{ url_for('habits.delete_habit', habit_id=habit._id) }}" class="habit__form">
-              <button type="submit" class="habit__button--delete">Delete</button>
+              <button type="submit" class="habit__button--delete">🗑️ <span>Delete</span></button>
             </form>
           </div>
         </div>
