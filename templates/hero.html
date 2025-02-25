@@ -2,33 +2,96 @@
 
 {% block main_content %}
 <div class="hero-container">
-    <div class="hero-content">
-        <h1 class="hero-title">Welcome to Streaker</h1>
-        <p class="hero-subtitle">Build better habits, one streaks at a time 🚀</p>
+  <div class="hero-content">
+    <h1 class="hero-title">Welcome to Streaker</h1>
+    <p class="hero-subtitle">Transform your life with the power of consistent habits 🚀</p>
 
-        <div class="hero-features">
-          <div class="feature">
-            <h3>📊 Track Daily</h3>
-            <p>Keep track of your daily habits with our simple interface</p>
-          </div>
-          <div class="feature">
-            <h3>🔥 Build Streaks</h3>
-            <p>Stay motivated by maintaining your streak</p>
-          </div>
-          <div class="feature">
-            <h3>📱 Easy to Use</h3>
-            <p>Simple and intuitive design for effortless habit tracking</p>
-          </div>
-        </div>
-
-        <div class="hero-cta">
-            {% if not session.get("user_id") %}
-                <a href="{{ url_for('auth.register') }}" class="cta-button">Get Started</a>
-                <a href="{{ url_for('auth.login') }}" class="cta-button-secondary">Login</a>
-            {% else %}
-                <a href="{{ url_for('habits.index') }}" class="cta-button">View My button</a>
-            {% endif %}
-        </div>
+    <div class="hero-features">
+      <div class="feature">
+        <h3>📊 Smart Tracking</h3>
+        <p>Track your daily habits with our intuitive interface. Visual progress indicators and streak counters keep you motivated.</p>
+      </div>
+      <div class="feature">
+        <h3>🔥 Build Streaks</h3>
+        <p>Watch your streaks grow day by day. The longer your streak, the more motivated you'll be to maintain it.</p>
+      </div>
+      <div class="feature">
+        <h3>📱 Seamless Experience</h3>
+        <p>Access your habits anywhere, anytime. Our responsive design works perfectly on all your devices.</p>
+      </div>
     </div>
+
+    <div class="hero-benefits">
+      <h2 class="benefits-title">Why Choose Streaker?</h2>
+      <div class="benefits-grid">
+        <div class="benefit-item">
+          <span class="benefit-icon">🎯</span>
+          <div>
+            <h3>Goal Setting</h3>
+            <p>Set clear, achievable goals and track your progress towards them.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">📈</span>
+          <div>
+            <h3>Progress Tracking</h3>
+            <p>Visual insights into your habit-forming journey.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">🔔</span>
+          <div>
+            <h3>Daily Reminders</h3>
+            <p>Never miss a day with customizable reminders.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">🌟</span>
+          <div>
+            <h3>Achievement System</h3>
+            <p>Earn badges and celebrate your milestones.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">🤝</span>
+          <div>
+            <h3>Social Features</h3>
+            <p>Share habits with friends and build a supportive community.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">🎮</span>
+          <div>
+            <h3>Gamification</h3>
+            <p>Level up, earn rewards, and unlock achievements as you progress.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-number">10K+</span>
+        <span class="stat-label">Active Users</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">1M+</span>
+        <span class="stat-label">Habits Tracked</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">50K+</span>
+        <span class="stat-label">Streaks Maintained</span>
+      </div>
+    </div>
+
+    <div class="hero-cta">
+      {% if not session.get("user_id") %}
+        <a href="{{ url_for('auth.register') }}" class="cta-button">Start Your Journey</a>
+        <a href="{{ url_for('auth.login') }}" class="cta-button cta-secondary">Login</a>
+      {% else %}
+        <a href="{{ url_for('habits.index') }}" class="cta-button">View My Habits</a>
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock %}
