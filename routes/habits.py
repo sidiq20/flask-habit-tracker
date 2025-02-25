@@ -1,9 +1,12 @@
 from flask import Blueprint, request, redirect, url_for, render_template, flash, session, current_app, jsonify
 from datetime import datetime, timedelta
+from services.email_service import EmailService
 from bson import ObjectId
 import json
 
 habits = Blueprint("habits", __name__)
+
+email_service = EmailService()
 
 def date_range(selected_date, days=7):
     return [selected_date + timedelta(days=i - 3) for i in range(days)]
@@ -68,10 +71,33 @@ def share_habit(habit_id):
         return redirect(url_for("auth.login"))
 
     email = request.form.get("email")
+    habit = current_app.db.get_habit_by_id(habit_id, user_id)
+
+    if not habit:
+        flash("Habit not found", "error")
+        return redirect(url_for("habits.index"))
+
     if current_app.db.share_habit(habit_id, email):
-        flash("Habit shared successfully!", "success")
+
+        subject = f"🚀 Streak Shared with You: {habit['name']}"
+        message = f"""
+        <html>
+            <body>
+                <h2>You've been invited to track a habit!</h2>
+                <p><strong>{habit['name']}</strong> has been shared with you. </p>
+                <p>Best, <br>Your Streak Tracker Team </p>
+            </body>
+        """
+
+        email_sent = email_service.send_email(email, subject, message)
+
+        if email_sent:
+            flash("Habit shared successfully via email! ✅", "success")
+        else:
+            flash("Habit shared, but email failed to send. ❌", "error")
     else:
         flash("Failed to share habit", "error")
+
     return redirect(url_for("habits.index"))
 
 @habits.route("/protect-streak/<habit_id>", methods=["POST"])
