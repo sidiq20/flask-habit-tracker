@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block main_content %}
+<div class="categories-container">
+  <h2 class="categories-title">Habit Categories</h2>
+  
+  <div class="categories-grid">
+    {% for category in categories %}
+    <div class="category-card">
+      <div class="category-icon">
+        {% if category == 'Health' %}🏃‍♂️
+        {% elif category == 'Learning' %}📚
+        {% elif category == 'Productivity' %}💼
+        {% elif category == 'Mindfulness' %}🧘‍♂️
+        {% else %}✨
+        {% endif %}
+      </div>
+      <h3 class="category-name">{{ category }}</h3>
+      <div class="category-stats">
+        <span class="stat">5 habits</span>
+        <span class="stat">85% completion</span>
+      </div>
+      <a href="{{ url_for('habits.index', category=category) }}" class="category-link">View Habits</a>
+    </div>
+    {% else %}
+    <div class="no-categories">
+      <h3>No Categories Yet</h3>
+      <p>Start by adding habits and organizing them into categories!</p>
+      <a href="{{ url_for('habits.add_habit') }}" class="category-cta">Add a Habit</a>
+    </div>
+    {% endfor %}
+  </div>
+  
+  <div class="category-suggestions">
+    <h3>Suggested Categories</h3>
+    <div class="suggestions-grid">
+      <div class="suggestion-card">
+        <span class="suggestion-icon">💪</span>
+        <h4>Fitness</h4>
+        <p>Track your workouts and physical activities</p>
+      </div>
+      <div class="suggestion-card">
+        <span class="suggestion-icon">🧠</span>
+        <h4>Mental Health</h4>
+        <p>Meditation, journaling, and self-care habits</p>
+      </div>
+      <div class="suggestion-card">
+        <span class="suggestion-icon">📖</span>
+        <h4>Reading</h4>
+        <p>Build a daily reading habit</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
