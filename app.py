@@ -13,6 +13,9 @@ load_dotenv()
 print("MONGO_URI:", os.environ.get("MONGO_URI"))
 print("DB_NAME:", os.environ.get("DB_NAME"))
 print("SECRET_KEY:", os.environ.get("SECRET_KEY"))
+print("SMTP_HOST:", os.environ.get("SMTP_HOST"))
+print("SMTP_USER:", os.environ.get("SMTP_USER"))
+print("SMTP_PASS:", os.environ.get("SMTP_PASS"))
 
 
 def create_app():
@@ -42,13 +45,14 @@ def create_app():
         )
 
     # Set up reminder scheduler
-    scheduler = BackgroundScheduler()
+    scheduler = BackgroundScheduler(deamon=True)
     reminder_service = ReminderService()
     scheduler.add_job(
         reminder_service.process_reminders,
         'interval',
         hours=1,
-        next_run_time=datetime.datetime.now()  # Now works since datetime is imported
+        timezone=datetime.timezone.utc,
+        next_run_time=datetime.datetime.now() # Now works since datetime is imported
     )
     scheduler.start()
 
@@ -58,4 +62,4 @@ if __name__ == "__main__":
     app = create_app()
     with app.app_context():
         print(app.url_map)
-    app.run(debug=True, use_reloader=False, port=3000)
+    app.run(use_reloader=False, port=3000)
