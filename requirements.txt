@@ -8,11 +8,13 @@ dnspython==2.7.0
 Flask==3.0.2
 Flask-WTF==1.2.2
 funcs==0.11.0
+gunicorn==23.0.0
 itsdangerous==2.2.0
 Jinja2==3.1.5
 MarkupSafe==3.0.2
 named==1.4.2
 ngrok==1.4.0
+packaging==24.2
 pymongo==4.6.1
 pyngrok==7.2.3
 python-dotenv==1.0.1
@@ -26,6 +28,7 @@ typing-aliases==1.10.1
 typing_extensions==4.12.2
 tzdata==2025.1
 tzlocal==5.2
+waitress==3.0.2
 Werkzeug==3.0.1
 wraps==0.15.0
 WTForms==3.2.1
