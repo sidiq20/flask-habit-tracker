@@ -32,14 +32,15 @@
         </div>
       {% endif %}
     {% endwith %}
-    <header class="header">
+    <header class="header" id="header">
       <h1 class="header__logo">
-        <a href="{{ url_for('habits.index') }}" class="header__link">streaker</a>
+        <a href="{{ url_for('pages.index') }}" class="header__link">streaker</a>
       </h1>
       <div class="header__nav">
         {% if session.get("user_id") %}
           {% if "add" not in request.endpoint %}
             <a href="{{ url_for('habits.add_habit') }}" class="header__link">+ Add new</a>
+            <a href="{{ url_for('habits.index') }}" class="header__link">Streaks</a>
           {% endif %}
           <a href="{{ url_for('habits.habit_templates') }}" class="header__link">Templates</a>
           <a href="{{ url_for('auth.logout') }}" class="header__link header__link--logout">Logout</a>
@@ -86,6 +87,7 @@
             <a href="{{ url_for('habits.categories') }}">Categories</a>
             <a href="{{ url_for('habits.achievements') }}">Achievements</a>
             <a href="{{ url_for('habits.habit_templates') }}">Templates</a>
+            <a href="{{ url_for('habits.index') }}">Streaks</a>
           </nav>
         </div>
         <div class="footer__section">
@@ -108,11 +110,28 @@
         </div>
       </div>
       <div class="footer__bottom">
-        <p>&copy; 2024 Streaker. All rights reserved.</p>
+        <p>&copy; 2025 Streaker. All rights reserved.</p>
       </div>
     </footer>
     {% endif %}
     <script>
+      // Scroll-based navbar transformation
+      let lastScroll = 0;
+      const header = document.getElementById('header');
+
+      window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+
+        if (currentScroll > 100) {
+          header.classList.add('header--scrolled');
+        } else {
+          header.classList.remove('header--scrolled');
+        }
+
+        lastScroll = currentScroll;
+      });
+
+      // Flash messages
       setTimeout(function() {
         var flashMessages = document.getElementById('flash-messages');
         if (flashMessages) {
